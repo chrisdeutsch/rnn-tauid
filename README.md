@@ -9,6 +9,7 @@ Requires:
 - scipy
 - keras
 - tensorflow
+- tqdm
 
 ### Training environment
 
@@ -27,7 +28,7 @@ export PATH="$HOME/testconda/bin:$PATH"
 
 # Alternatively activate your favorite environment
 
-CONDA_PKGS="numpy scipy h5py keras"
+CONDA_PKGS="numpy scipy h5py keras tqdm"
 PIP_PKGS="root_numpy" # conda version is outdated
 
 conda install -q -y $CONDA_PKGS
@@ -42,8 +43,10 @@ Activate environment:
 setupATLAS --quiet
 lsetup -q "root 6.08.06-x86_64-slc6-gcc62-opt"
 export PATH="$HOME/testconda/bin:$PATH"
+export PATH="$HOME/rnnid-pkg/scripts:$PATH" # TODO: Fix
+export PYTHONPATH="$HOME/rnnid-pkg/src:$PATH" # TODO: Fix
 ```
-
+TODO: `root_numpy` does not seem to work when setting up this way
 TODO: Add scripts directory to path
 
 ### Eventloop algorithms

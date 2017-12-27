@@ -28,3 +28,8 @@ sel_truth_1p = and_cuts([baseline, mode1P3PWithTruth, mode1P])
 sel_1p = and_cuts([baselineNoTruth, mode1P3PNoTruth, mode1P])
 sel_truth_3p = and_cuts([baseline, mode1P3PWithTruth, mode3P])
 sel_3p = and_cuts([baselineNoTruth, mode1P3PNoTruth, mode3P])
+
+sel_dict = {
+    "truth1p": sel_truth_1p, "1p": sel_1p,
+    "truth3p": sel_truth_3p, "3p": sel_3p
+}
