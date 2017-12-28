@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+set -e
 
 MXAOD_DIR="MxAOD_v11/"
 OUTDIR="ntuples_v11/"
