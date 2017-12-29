@@ -1,4 +1,5 @@
 import numpy as np
+import h5py
 
 
 def scale(arr, mean=True, std=True, per_obj=True):
@@ -120,12 +121,13 @@ def preprocess(train, test, funcs):
     return preprocessing
 
 
-def save_preprocessing(filename, variables, preprocessing):
+def save_preprocessing(filename, **kwargs):
     with h5py.File(filename, "w") as f:
-        # Save variable names
-        f["variables"] = np.array(variables, "S")
+        for group, (variables, preprocessing) in kwargs.iteritems():
+            # Save variable names
+            f["/".join((group, "variables"))] = np.array(variables, "S")
 
-        # Save preprocessing
-        for var, (offset, scale) in zip(variables, preprocessing):
-            f[var + "/offset"] = offset
-            f[var + "/scale"] = scale
+            # Save scales and offsets
+            for var, (offset, scale) in zip(variables, preprocessing):
+                f["/".join((group, var, "offset"))] = offset
+                f["/".join((group, var, "scale"))] = scale

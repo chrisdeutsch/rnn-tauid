@@ -3,7 +3,7 @@ from keras.layers import Input, Dense, LSTM, Masking, \
                          TimeDistributed, concatenate
 
 
-def baseline(
+def baseline_model(
         input_shape_1, input_shape_2, input_shape_3,
         dense_units_1=32, lstm_units_1=32,
         dense_units_2=32, lstm_units_2=32,
@@ -17,16 +17,16 @@ def baseline(
     mask_1 = Masking(mask_value=mask_value)(x_1)
     shared_dense_1 = TimeDistributed(
         Dense(dense_units_1, activation="relu"))(mask_1)
-    lstm_1 = LSTM(output_dim=lstm_units_1, unroll=unroll,
-                  go_backwards=backwards, activation="relu")(shared_dense_1)
+    lstm_1 = LSTM(lstm_units_1, unroll=unroll, go_backwards=backwards,
+                  activation="relu")(shared_dense_1)
 
     # Branch 2
     x_2 = Input(shape=input_shape_2)
     mask_2 = Masking(mask_value=mask_value)(x_2)
     shared_dense_2 = TimeDistributed(
         Dense(dense_units_2, activation="relu"))(mask_2)
-    lstm_2 = LSTM(output_dim=lstm_units_2, unroll=unroll,
-                  go_backwards=backwards, activation="relu")(shared_dense_2)
+    lstm_2 = LSTM(lstm_units_2, unroll=unroll, go_backwards=backwards,
+                  activation="relu")(shared_dense_2)
 
     # Branch 3
     x_3 = Input(shape=input_shape_3)
@@ -39,10 +39,10 @@ def baseline(
 
     y = Dense(1, activation="sigmoid")(merged_branches)
 
-    return Model(input=[x_1, x_2, x_3], output=y)
+    return Model(inputs=[x_1, x_2, x_3], outputs=y)
 
 
-def experimental_deep(
+def experimental_model(
         input_shape_1, input_shape_2, input_shape_3,
         dense_units_1_1=32, dense_units_1_2=32,
         lstm_units_1_1=32, lstm_units_1_2=32,
@@ -61,11 +61,10 @@ def experimental_deep(
         Dense(dense_units_1_1, activation="relu"))(mask_1)
     shared_dense_1_2 = TimeDistributed(
         Dense(dense_units_1_2, activation="relu"))(shared_dense_1_1)
-    lstm_1_1 = LSTM(output_dim=lstm_units_1_1, unroll=unroll,
-                    go_backwards=backwards, activation="relu",
-                    return_sequences=True)(shared_dense_1_2)
-    lstm_1_2 = LSTM(output_dim=lstm_units_1_2, unroll=unroll,
-                    go_backwards=backwards, activation="relu")(lstm_1_1)
+    lstm_1_1 = LSTM(lstm_units_1_1, unroll=unroll, go_backwards=backwards,
+                    activation="relu", return_sequences=True)(shared_dense_1_2)
+    lstm_1_2 = LSTM(lstm_units_1_2, unroll=unroll, go_backwards=backwards,
+                    activation="relu")(lstm_1_1)
 
     # Branch 2
     x_2 = Input(shape=input_shape_2)
@@ -74,11 +73,10 @@ def experimental_deep(
         Dense(dense_units_2_1, activation="relu"))(mask_2)
     shared_dense_2_2 = TimeDistributed(
         Dense(dense_units_2_2, activation="relu"))(shared_dense_2_1)
-    lstm_2_1 = LSTM(output_dim=lstm_units_2_1, unroll=unroll,
-                    go_backwards=backwards, activation="relu",
-                    return_sequences=True)(shared_dense_2_2)
-    lstm_2_2 = LSTM(output_dim=lstm_units_2_2, unroll=unroll,
-                    go_backwards=backwards, activation="relu")(lstm_2_1)
+    lstm_2_1 = LSTM(lstm_units_2_1, unroll=unroll, go_backwards=backwards,
+                    activation="relu", return_sequences=True)(shared_dense_2_2)
+    lstm_2_2 = LSTM(lstm_units_2_2, unroll=unroll, go_backwards=backwards,
+                    activation="relu")(lstm_2_1)
 
     # Branch 3
     x_3 = Input(shape=input_shape_3)
@@ -88,8 +86,10 @@ def experimental_deep(
 
     # Merge
     merged_branches = concatenate([lstm_1_2, lstm_2_2, dense_3_3])
-    merge_dense_1 = Dense(merge_dense_units_1, activation="relu")(merged_branches)
-    merge_dense_2 = Dense(merge_dense_units_2, activation="relu")(merge_dense_1)
+    merge_dense_1 = Dense(merge_dense_units_1, activation="relu")(
+        merged_branches)
+    merge_dense_2 = Dense(merge_dense_units_2, activation="relu")(
+        merge_dense_1)
     y = Dense(1, activation="sigmoid")(merge_dense_2)
 
-    return Model(input=[x_1, x_2, x_3], output=y)
+    return Model(inputs=[x_1, x_2, x_3], outputs=y)

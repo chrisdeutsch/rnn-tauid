@@ -1,3 +1,5 @@
+import imp
+
 import numpy as np
 from collections import namedtuple
 from rnn_tauid.preprocessing import pt_reweight
@@ -87,3 +89,36 @@ def train_test_split(data, test_size=0.2):
         ret.extend([Data(x=d.x[train], y=d.y[train], w=d.w[train]),
                     Data(x=d.x[test], y=d.y[test], w=d.w[test])])
     return ret
+
+
+def load_vars(var_module=None, tag=None):
+    jet_vars = None
+    trk_vars = None
+    cls_vars = None
+
+    # Load variables from module
+    if var_module:
+        mod = imp.load_soure("var_module", var_module)
+        if hasattr(mod, "jet_vars"):
+            jet_vars = mod.jet_vars
+        if hasattr(mod, "trk_vars"):
+            trk_vars = mod.trk_vars
+        if hasattr(mod, "cls_vars"):
+            cls_vars = mod.cls_vars
+
+    # If still 'None' load defaults
+    if not jet_vars:
+        if tag == "1p":
+            from rnn_tauid.variables import id1p_vars as jet_vars
+        elif tag == "3p":
+            from rnn_tauid.variables import id3p_vars as jet_vars
+        else:
+            raise RuntimeError("Unknown prongness")
+
+    if not trk_vars:
+        from rnn_tauid.variables import track_vars as trk_vars
+
+    if not cls_vars:
+        from rnn_tauid.variables import cluster_vars as cls_vars
+
+    return jet_vars, trk_vars, cls_vars

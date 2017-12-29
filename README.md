@@ -74,3 +74,20 @@ source ${AnalysisBase_PLATFORM}/setup.sh
 3. Produce hdf5 files for training
 4. Train
 5. Evaluate
+
+## Related packages
+
+- [THOR](https://gitlab.cern.ch/cdeutsch/THOR/tree/RNN-MC16A)
+- [tauRecToolsDev](https://gitlab.cern.ch/cdeutsch/tauRecToolsDev/tree/RNN-MC16A)
+
+TODO: Explain workflow including external packages
+
+## TODOs
+
+- Implement the most important plots for performance evaluation
+    - Create subpackage for plotting incl. a plot class for defining the plots
+    - Partial dependence plots?
+    - Always save raw data to recreate the plot (pickle?)
+- Port training implementation
+- Write an evaluator using lwtnn and eventloop (produce slim MxAOD output)
+- Write a one-shot script to do everything
