@@ -21,24 +21,51 @@ else
 fi
 
 
+# TRAINING
+
 # 1-prong signal (training)
-echo "Converting 1-prong signal sample..."
+echo "Converting 1-prong signal sample (train)..."
 ntuple2hdf.py $OUTDIR/sig1P_v11_train_%d.h5 truth1p \
     $NTUPLE_DIR/*Gammatautau*.root \
     $FLAGS --sel "$TRAIN_SEL"
 
 # 3-prong signal (training)
-echo "Converting 3-prong signal sample..."
+echo "Converting 3-prong signal sample (train)..."
 ntuple2hdf.py $OUTDIR/sig3P_v11_train_%d.h5 truth3p \
     $NTUPLE_DIR/*Gammatautau*.root \
     $FLAGS --sel "$TRAIN_SEL"
 
 # 1-prong background (training)
-echo "Converting 1-prong background sample..."
+echo "Converting 1-prong background sample (train)..."
 ntuple2hdf.py $OUTDIR/bkg1P_v11_train_%d.h5 1p $NTUPLE_DIR/*JZ?W*.root \
     $FLAGS --sel "$TRAIN_SEL"
 
 # 3-prong background (training)
-echo "Converting 3-prong background sample..."
+echo "Converting 3-prong background sample (train)..."
 ntuple2hdf.py $OUTDIR/bkg3P_v11_train_%d.h5 3p $NTUPLE_DIR/*JZ?W*.root \
     $FLAGS --sel "$TRAIN_SEL"
+
+
+# TESTING
+
+# 1-prong signal (testing)
+echo "Converting 1-prong signal sample (test)..."
+ntuple2hdf.py $OUTDIR/sig1P_v11_test_%d.h5 truth1p \
+    $NTUPLE_DIR/*Gammatautau*.root \
+    $FLAGS --sel "$TEST_SEL"
+
+# 3-prong signal (testing)
+echo "Converting 3-prong signal sample (test)..."
+ntuple2hdf.py $OUTDIR/sig3P_v11_test_%d.h5 truth3p \
+    $NTUPLE_DIR/*Gammatautau*.root \
+    $FLAGS --sel "$TEST_SEL"
+
+# 1-prong background (testing)
+echo "Converting 1-prong background sample (test)..."
+ntuple2hdf.py $OUTDIR/bkg1P_v11_test_%d.h5 1p $NTUPLE_DIR/*JZ?W*.root \
+    $FLAGS --sel "$TEST_SEL"
+
+# 3-prong background (testing)
+echo "Converting 3-prong background sample (test)..."
+ntuple2hdf.py $OUTDIR/bkg3P_v11_test_%d.h5 3p $NTUPLE_DIR/*JZ?W*.root \
+    $FLAGS --sel "$TEST_SEL"
