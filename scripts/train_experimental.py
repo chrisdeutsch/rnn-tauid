@@ -7,9 +7,11 @@ def main(args):
     import numpy as np
     import h5py
 
-    from keras.callbacks import EarlyStopping, ModelCheckpoint, CSVLogger
+    from keras.optimizers import SGD
+    from keras.callbacks import EarlyStopping, ModelCheckpoint, CSVLogger, \
+        ReduceLROnPlateau
 
-    from rnn_tauid.models import baseline_model
+    from rnn_tauid.models import experimental_model
     from rnn_tauid.utils import load_vars, load_data, train_test_split
     from rnn_tauid.preprocessing import preprocess, save_preprocessing
 
@@ -88,15 +90,26 @@ def main(args):
     shape_trk = trk_train.x.shape[1:]
     shape_cls = cls_train.x.shape[1:]
 
-    model = baseline_model(
+    model = experimental_model(
         shape_trk, shape_cls, shape_jet,
-        dense_units_1=args.dense_units_1, lstm_units_1=args.lstm_units_1,
-        dense_units_2=args.dense_units_2, lstm_units_2=args.lstm_units_2,
+        dense_units_1_1=args.dense_units_1_1,
+        dense_units_1_2=args.dense_units_1_2,
+        lstm_units_1_1=args.lstm_units_1_1,
+        lstm_units_1_2=args.lstm_units_1_2,
+        dense_units_2_1=args.dense_units_2_1,
+        dense_units_2_2=args.dense_units_2_2,
+        lstm_units_2_1=args.lstm_units_2_1,
+        lstm_units_2_2=args.lstm_units_2_2,
         dense_units_3_1=args.dense_units_3_1,
         dense_units_3_2=args.dense_units_3_2,
-        dense_units_3_3=args.dense_units_3_3)
+        dense_units_3_3=args.dense_units_3_3,
+        merge_dense_units_1=args.merge_dense_units_1,
+        merge_dense_units_2=args.merge_dense_units_2)
     model.summary()
-    model.compile(loss="binary_crossentropy", optimizer="adam",
+
+
+    opt = SGD(lr=0.01, momentum=0.9, nesterov=True)
+    model.compile(loss="binary_crossentropy", optimizer=opt,
               metrics=["accuracy"])
 
     # Configure callbacks
@@ -113,6 +126,9 @@ def main(args):
     if args.csv_log:
         csv_logger = CSVLogger(args.csv_log)
         callbacks.append(csv_logger)
+
+    reduce_lr = ReduceLROnPlateau(patience=4, verbose=1, min_lr=1e-4)
+    callbacks.append(reduce_lr)
 
     # Start training
     hist = model.fit(
@@ -147,13 +163,25 @@ if __name__ == "__main__":
     parser.add_argument("--var-mod", default=None)
 
     arch = parser.add_argument_group("architecture")
-    arch.add_argument("--dense-units-1", type=int, default=32)
-    arch.add_argument("--lstm-units-1", type=int, default=32)
-    arch.add_argument("--dense-units-2", type=int, default=32)
-    arch.add_argument("--lstm-units-2", type=int, default=24)
+    arch.add_argument("--dense-units-1-1", type=int, default=32)
+    arch.add_argument("--dense-units-1-2", type=int, default=32)
+
+    arch.add_argument("--lstm-units-1-1", type=int, default=32)
+    arch.add_argument("--lstm-units-1-2", type=int, default=32)
+
+    arch.add_argument("--dense-units-2-1", type=int, default=32)
+    arch.add_argument("--dense-units-2-2", type=int, default=32)
+
+    arch.add_argument("--lstm-units-2-1", type=int, default=24)
+    arch.add_argument("--lstm-units-2-2", type=int, default=24)
+
+
     arch.add_argument("--dense-units-3-1", type=int, default=128)
     arch.add_argument("--dense-units-3-2", type=int, default=128)
     arch.add_argument("--dense-units-3-3", type=int, default= 16)
+
+    arch.add_argument("--merge-dense-units-1", type=int, default=64)
+    arch.add_argument("--merge-dense-units-2", type=int, default=32)
 
     args = parser.parse_args()
     main(args)
