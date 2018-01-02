@@ -131,3 +131,18 @@ def save_preprocessing(filename, **kwargs):
             for var, (offset, scale) in zip(variables, preprocessing):
                 f["/".join((group, var, "offset"))] = offset
                 f["/".join((group, var, "scale"))] = scale
+
+
+def load_preprocessing(filename, *args):
+    offset = dict()
+    scale = dict()
+
+    with h5py.File(filename, "r") as f:
+        for group_name in args:
+            group = f[group_name]
+
+            invars = np.char.decode(group["variables"][...]).tolist()
+            offset[group_name] = {v: group[v + "/offset"][...] for v in invars}
+            scale[group_name] = {v: group[v + "/scale"][...] for v in invars}
+
+    return offset, scale
