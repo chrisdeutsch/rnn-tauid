@@ -14,7 +14,7 @@ PIP_PKGS="root_numpy" # conda version is outdated
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
 # Setting up root
-if [[ -x "$(command -v setupATLAS)" ]]; then
+if [ "$(command -v setupATLAS)" ]; then
     setupATLAS --quiet
     lsetup "root ${ROOT_VERSION}"
     HAS_ROOT=1
