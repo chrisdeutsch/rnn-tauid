@@ -91,3 +91,4 @@ TODO: Explain workflow including external packages
 - Port training implementation
 - Write an evaluator using lwtnn and eventloop (produce slim MxAOD output)
 - Write a one-shot script to do everything
+- Explain sample naming convention
