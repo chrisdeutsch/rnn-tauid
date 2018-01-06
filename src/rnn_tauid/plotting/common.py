@@ -1,25 +1,18 @@
+from collections import Iterable
+
 import h5py
 import matplotlib.pyplot as plt
+from sklearn.metrics import roc_curve
 
 from rnn_tauid.plotting.mpl_style import mpl_setup
 from rnn_tauid.plotting.base import Plot
+from rnn_tauid.plotting.utils import colors
 from rnn_tauid.preprocessing import pt_reweight
 
 mpl_setup()
 
 h5opt = dict(driver="family", memb_size=8*1024**3)
 
-c = {
-    "red": "#e41a1c",
-    "blue": "#377eb8",
-    "green": "#4daf4a",
-    "violet": "#984ea3",
-    "orange": "#ff7f00",
-    "yellow": "#ffff33",
-    "brown": "#a65628",
-    "pink": "#f781bf",
-    "grey": "#999999"
-}
 
 def load_scores(sigf, bkgf):
     with h5py.File(sigf, "r") as s, \
@@ -42,6 +35,27 @@ def load_from_samples(sigf, bkgf, variables):
             bkg_dict[v] = b[v][...]
 
     return sig_dict, bkg_dict
+
+
+class HistPlot(Plot):
+    def __init__(self, var):
+        super(HistPlot, self).__init__()
+
+        if not isinstance(var, Iterable):
+            self.var = [var]
+        else:
+            self.var = var
+
+
+
+
+
+    def plot(self, samples, scores=None):
+
+
+        fig, ax = plt.subplots()
+
+        return fig
 
 
 
