@@ -8,6 +8,7 @@ def main(args):
     from os import path
     from glob import glob
     from tqdm import tqdm
+    import numpy as np
     from rnn_tauid.plotting.common import ScorePlot, ROC, ROCRatio, \
         FlattenerCutmapPlot, FlattenerEfficiencyPlot, EfficiencyPlot
     from rnn_tauid.plotting.utils import Sample, SampleHolder
@@ -104,7 +105,10 @@ def main(args):
         # ("flat60", FlattenerCutmapPlot("score", 0.6)),
         # ("flat45", FlattenerCutmapPlot("score", 0.45)),
         # ("flat60_eff", FlattenerEfficiencyPlot("score", 0.6))
-        ("eff_pt", EfficiencyPlot("score", 0.6))
+        ("eff_pt", EfficiencyPlot("score", 0.6, "TauJets/pt",
+                                  bins=np.linspace(20, 500, 21), scale=1e-3)),
+        ("eff_mu", EfficiencyPlot("score", 0.6, "TauJets/mu",
+                                  bins=np.linspace(0, 60, 10)))
     ]
 
     if not path.exists(args.outdir):
