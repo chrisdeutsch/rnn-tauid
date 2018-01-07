@@ -2,8 +2,7 @@ class Plot(object):
     def __init__(self):
         pass
 
-
-    def plot(self, samples, scores=None):
+    def plot(self, sh):
         """
         Returns:
         matplotlib figure? axes?

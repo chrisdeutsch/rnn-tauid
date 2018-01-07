@@ -7,7 +7,7 @@ CONDA_PATH="${HOME}/miniconda2"
 CONDA_ENV="rnn-tauid"
 
 # Packages for first time setup
-CONDA_PKGS="numpy scipy h5py keras tqdm"
+CONDA_PKGS="numpy scipy h5py keras tqdm scikit-learn"
 PIP_PKGS="root_numpy" # conda version is outdated
 
 # Path of the directory containing the script

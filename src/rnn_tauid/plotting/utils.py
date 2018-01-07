@@ -1,12 +1,9 @@
 from collections import namedtuple
 
+import numpy as np
 import h5py
 from scipy.interpolate import interp1d
 from sklearn.metrics import roc_curve
-
-
-Samples = namedtuple("Samples", ["sig_train", "sig_test",
-                                 "bkg_train", "bkg_test"])
 
 
 class Sample(object):
@@ -65,6 +62,10 @@ class Sample(object):
         return return_vars
 
 
+SampleHolder = namedtuple("SampleHolder", ["sig_train", "sig_test",
+                                           "bkg_train", "bkg_test"])
+
+
 colors = {
     "red": "#e41a1c",
     "blue": "#377eb8",
@@ -77,19 +78,17 @@ colors = {
     "grey": "#999999"
 }
 
-
-def load_variables(samples, variables, train=False, test=True):
-    if not isinstance(samples, list):
-        samples = [samples]
-
-    if not isinstance(variables, list):
-        variables = [variables]
-
-
-
-    ret = {}
-
-    return ret
+colorseq = [
+    colors["red"],
+    colors["blue"],
+    colors["green"],
+    colors["violet"],
+    colors["orange"],
+    colors["yellow"],
+    colors["brown"],
+    colors["pink"],
+    colors["grey"]
+]
 
 
 def roc(y_true, y, **kwargs):

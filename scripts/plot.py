@@ -8,8 +8,9 @@ def main(args):
     from os import path
     from glob import glob
     from tqdm import tqdm
-    from rnn_tauid.plotting.base import Samples
-    from rnn_tauid.plotting.common import ScorePlot
+    from rnn_tauid.plotting.common import ScorePlot, ROC, ROCRatio, \
+        FlattenerCutmapPlot, FlattenerEfficiencyPlot
+    from rnn_tauid.plotting.utils import Sample, SampleHolder
 
     # Find sample files
     pattern = re.compile(r".*(?P<s>sig|bkg)"
@@ -59,59 +60,63 @@ def main(args):
     for k, v in score_dict.items():
         print("{:16}{}".format(k, v))
 
-    # Create the samples
-    inputs = []
+    # Merge samples and scores
+    merge_dict = {}
+    for key in set(sample_dict.keys()) | set(score_dict.keys()):
+        if key in sample_dict:
+            merge_dict.setdefault(key, []).append(sample_dict[key])
+        if key in score_dict:
+            merge_dict.setdefault(key, []).append(score_dict[key])
+
+    # Input samples
+    inputs = {}
 
     if args.prong_1:
-        samples_1p = Samples(
-            sig_train=sample_dict.get("sig_1p_train", None),
-            sig_test=sample_dict.get("sig_1p_test", None),
-            bkg_train=sample_dict.get("bkg_1p_train", None),
-            bkg_test=sample_dict.get("bkg_1p_test", None))
+        samples_1p = SampleHolder(
+            sig_train=Sample(*merge_dict["sig_1p_train"]),
+            sig_test=Sample(*merge_dict["sig_1p_test"]),
+            bkg_train=Sample(*merge_dict["bkg_1p_train"]),
+            bkg_test=Sample(*merge_dict["bkg_1p_test"])
+        )
 
-        scores_1p = Samples(
-            sig_train=score_dict.get("sig_1p_train", None),
-            sig_test=score_dict.get("sig_1p_test", None),
-            bkg_train=score_dict.get("bkg_1p_train", None),
-            bkg_test=score_dict.get("bkg_1p_test", None))
-
-        inputs.append(("1P", samples_1p, scores_1p))
+        inputs["1P"] = samples_1p
 
     if args.prong_3:
-        samples_3p = Samples(
-            sig_train=sample_dict.get("sig_3p_train", None),
-            sig_test=sample_dict.get("sig_3p_test", None),
-            bkg_train=sample_dict.get("bkg_3p_train", None),
-            bkg_test=sample_dict.get("bkg_3p_test", None))
+        samples_3p = SampleHolder(
+            sig_train=Sample(*merge_dict["sig_3p_train"]),
+            sig_test=Sample(*merge_dict["sig_3p_test"]),
+            bkg_train=Sample(*merge_dict["bkg_3p_train"]),
+            bkg_test=Sample(*merge_dict["bkg_3p_test"])
+        )
 
-        scores_3p = Samples(
-            sig_train=score_dict.get("sig_3p_train", None),
-            sig_test=score_dict.get("sig_3p_test", None),
-            bkg_train=score_dict.get("bkg_3p_train", None),
-            bkg_test=score_dict.get("bkg_3p_test", None))
-
-        inputs.append(("3P", samples_3p, scores_3p))
+        inputs["3P"] = samples_3p
 
 
     plots = [
-        ("scoreplot", ScorePlot(bins=50, range=(0, 1))),
-        ("scoreplot_log", ScorePlot(plot_train=True, log_y=True, bins=50,
-                                    range=(0, 1)))
+        # ("scoreplot", ScorePlot()),
+        # ("scoreplot_log", ScorePlot(log_y=True)),
+        # ("scoreplot_comparison", ScorePlot(train=True)),
+        # ("scoreplot_comparison_log", ScorePlot(log_y=True, train=True)),
+        # ("roc", ROC(["TauJets/BDTJetScore", "TauJets/RNNJetScore", "score"])),
+        # ("roc_ratio", ROCRatio([("score", "TauJets/BDTJetScore"),
+        #                         ("score", "TauJets/RNNJetScore")]))
+        ("flat75", FlattenerCutmapPlot("score", 0.75)),
+        ("flat60", FlattenerCutmapPlot("score", 0.6)),
+        ("flat45", FlattenerCutmapPlot("score", 0.45)),
+        ("flat60_eff", FlattenerEfficiencyPlot("score", 0.6))
     ]
 
     if not path.exists(args.outdir):
         os.mkdir(args.outdir)
 
-    for prong, samples, scores in tqdm(inputs):
+    for key in tqdm(inputs):
         for name, p in tqdm(plots):
             # TODO: Wrap in try block
-            fig = p.plot(samples, scores)
+            fig = p.plot(inputs[key])
 
-            outf_pdf = "{}_{}.pdf".format(name, prong)
-            outf_raw = "{}_{}.pkl".format(name, prong)
+            outf_pdf = "{}_{}.pdf".format(name, key)
 
             fig.savefig(path.join(args.outdir, outf_pdf))
-            p.save_raw(path.join(args.outdir, outf_raw))
 
 
 if __name__ == "__main__":
