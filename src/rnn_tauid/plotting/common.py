@@ -8,7 +8,8 @@ from scipy.stats import binned_statistic_2d
 
 from rnn_tauid.plotting.mpl_style import mpl_setup
 from rnn_tauid.plotting.base import Plot
-from rnn_tauid.plotting.utils import colors, colorseq, roc, roc_ratio
+from rnn_tauid.plotting.utils import colors, colorseq, roc, roc_ratio, \
+    binned_efficiency_ci
 
 from rnn_tauid.preprocessing import pt_reweight
 
@@ -280,7 +281,49 @@ class FlattenerEfficiencyPlot(Plot):
 
 
 class EfficiencyPlot(Plot):
-    pass
+    # TODO: Plot vs arbitrary variable
+    def __init__(self, score, eff):
+        super(EfficiencyPlot, self).__init__()
+
+        self.score = score
+        self.eff = eff
+
+
+    def plot(self, sh):
+        # Flatten on training sample
+        sig_train = sh.sig_train.get_variables("TauJets/pt", "TauJets/mu",
+                                               self.score)
+        flat = Flattener(pt_bins, mu_bins, self.eff)
+        flat.fit(sig_train["TauJets/pt"], sig_train["TauJets/mu"],
+                 sig_train[self.score])
+
+        # Efficiency on testing sample
+        sig_test = sh.sig_test.get_variables("TauJets/pt","TauJets/mu",
+                                             self.score)
+        pass_thr = flat.passes_thr(sig_test["TauJets/pt"],
+                                   sig_test["TauJets/mu"],
+                                   sig_test[self.score])
+
+        eff = binned_efficiency_ci(sig_test["TauJets/pt"], pass_thr,
+                                   bins=pt_bins)
+
+        # Plot
+        fig, ax = plt.subplots()
+
+        bin_center = (pt_bins[1:] + pt_bins[:-1]) / 2.0
+        bin_half_width = (pt_bins[1:] - pt_bins[:-1]) / 2.0
+
+        ci_lo, ci_hi = eff.ci
+
+        yerr = np.vstack([eff.median - ci_lo, ci_hi - eff.median])
+        ax.errorbar(bin_center / 1000.0, eff.median,
+                    xerr=bin_half_width / 1000.0,
+                    yerr=yerr,
+                    fmt="o", color=colors["red"])
+        ax.set_xlim(20, 200)
+        ax.set_ylabel("Signal efficiency", y=1, ha="right")
+
+        return fig
 
 
 class RatioPlot(Plot):

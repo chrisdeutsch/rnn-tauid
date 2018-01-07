@@ -9,7 +9,7 @@ def main(args):
     from glob import glob
     from tqdm import tqdm
     from rnn_tauid.plotting.common import ScorePlot, ROC, ROCRatio, \
-        FlattenerCutmapPlot, FlattenerEfficiencyPlot
+        FlattenerCutmapPlot, FlattenerEfficiencyPlot, EfficiencyPlot
     from rnn_tauid.plotting.utils import Sample, SampleHolder
 
     # Find sample files
@@ -100,10 +100,11 @@ def main(args):
         # ("roc", ROC(["TauJets/BDTJetScore", "TauJets/RNNJetScore", "score"])),
         # ("roc_ratio", ROCRatio([("score", "TauJets/BDTJetScore"),
         #                         ("score", "TauJets/RNNJetScore")]))
-        ("flat75", FlattenerCutmapPlot("score", 0.75)),
-        ("flat60", FlattenerCutmapPlot("score", 0.6)),
-        ("flat45", FlattenerCutmapPlot("score", 0.45)),
-        ("flat60_eff", FlattenerEfficiencyPlot("score", 0.6))
+        # ("flat75", FlattenerCutmapPlot("score", 0.75)),
+        # ("flat60", FlattenerCutmapPlot("score", 0.6)),
+        # ("flat45", FlattenerCutmapPlot("score", 0.45)),
+        # ("flat60_eff", FlattenerEfficiencyPlot("score", 0.6))
+        ("eff_pt", EfficiencyPlot("score", 0.6))
     ]
 
     if not path.exists(args.outdir):

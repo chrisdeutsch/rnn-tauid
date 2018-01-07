@@ -3,6 +3,7 @@ from collections import namedtuple
 import numpy as np
 import h5py
 from scipy.interpolate import interp1d
+from scipy.stats import binned_statistic
 from sklearn.metrics import roc_curve
 
 
@@ -113,3 +114,54 @@ def roc_ratio(y_true, y1, y2, **kwargs):
     ratio = roc1(eff) / roc2(eff)
 
     return eff, ratio
+
+
+def binned_efficiency_ci(x, pass_sel, weight=None, ci=68.3, nbootstrap=100,
+                         return_inverse=False, **kwargs):
+    # TODO: Accept multiple pass_sel
+    pass_sel = pass_sel.astype(np.float32)
+
+    # Check inputs
+    assert len(x) == len(pass_sel)
+    if weight:
+        assert len(x) == len(weight)
+
+    efficiency = []
+    for i in range(nbootstrap):
+        idx = np.random.randint(len(x), size=len(x))
+        x_bs = x[idx]
+
+        # Weight of passing events
+        pass_weight_bs = pass_sel[idx]
+        if weight:
+            weight_bs = weight[idx]
+            pass_weight_bs *= weight_bs
+
+        # Pass selection
+        p, _, _ = binned_statistic(x, pass_weight_bs, statistic="sum",
+                                      **kwargs)
+
+        # Total
+        if weight:
+            t, _, _ = binned_statistic(x, weight_bs, statistic="sum",
+                                          **kwargs)
+        else:
+            t, _, _ = binned_statistic(x, pass_weight_bs, statistic="count",
+                                          **kwargs)
+
+        efficiency.append(p / t)
+
+    efficiency = np.array(efficiency)
+
+    if return_inverse:
+        efficiency = 1.0 / efficiency
+
+    perc_lo = (100.0 - ci) / 2.0
+    perc_hi = 100.0 - perc_lo
+
+    ci_lo, ci_hi = np.percentile(efficiency, [perc_lo, perc_hi], axis=0)
+    mean = np.mean(efficiency, axis=0)
+    median = np.median(efficiency, axis=0)
+
+    efficiency_ci = namedtuple("EfficiencyCI", ["mean", "median", "ci"])
+    return efficiency_ci(mean=mean, median=median, ci=(ci_lo, ci_hi))
