@@ -128,14 +128,17 @@ def main(args):
                             scale=1e-3)),
             ("eff_mu_{}".format(eff),
              EfficiencyPlot(["score", "TauJets/BDTJetScore"], eff / 100.0,
-                            "TauJets/mu", bins=np.linspace(0, 45, 9),
-                            scale=1e-3)),
+                            "TauJets/mu", bins=np.linspace(0, 45, 9))),
             ("eff_nvtx_{}".format(eff),
              EfficiencyPlot(["score", "TauJets/BDTJetScore"], eff / 100.0,
                             "TauJets/nVtxPU", bins=np.linspace(0, 35, 9))),
             ("eff_eta_{}".format(eff),
              EfficiencyPlot(["score", "TauJets/BDTJetScore"], eff / 100.0,
                             "TauJets/eta", bins=np.linspace(-2.5, 2.5, 21))),
+            ("eff_phi_{}".format(eff),
+             EfficiencyPlot(["score", "TauJets/BDTJetScore"], eff / 100.0,
+                            "TauJets/phi",
+                            bins=np.linspace(-np.pi, np.pi,21))),
             ("rej_pt_{}".format(eff),
              RejectionPlot(["score", "TauJets/BDTJetScore"], eff / 100.0,
                            "TauJets/pt", bins=10 ** np.linspace(
@@ -149,7 +152,10 @@ def main(args):
                            "TauJets/nVtxPU", bins=np.linspace(0, 35, 9))),
             ("rej_eta_{}".format(eff),
              RejectionPlot(["score", "TauJets/BDTJetScore"], eff / 100.0,
-                           "TauJets/eta", bins=np.linspace(-2.5, 2.5, 21)))
+                           "TauJets/eta", bins=np.linspace(-2.5, 2.5, 21))),
+            ("rej_phi_{}".format(eff),
+             RejectionPlot(["score", "TauJets/BDTJetScore"], eff / 100.0,
+                           "TauJets/phi", bins=np.linspace(-np.pi, np.pi, 21)))
         ]
 
     if not path.exists(args.outdir):
@@ -160,6 +166,7 @@ def main(args):
             fig = p.plot(inputs[key])
             outf_pdf = "{}_{}.pdf".format(name, key)
             fig.savefig(path.join(args.outdir, outf_pdf))
+            fig.close()
 
 
 if __name__ == "__main__":
