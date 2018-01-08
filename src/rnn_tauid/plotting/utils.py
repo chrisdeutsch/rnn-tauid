@@ -118,50 +118,63 @@ def roc_ratio(y_true, y1, y2, **kwargs):
 
 def binned_efficiency_ci(x, pass_sel, weight=None, ci=68.3, nbootstrap=100,
                          return_inverse=False, **kwargs):
-    # TODO: Accept multiple pass_sel
-    pass_sel = pass_sel.astype(np.float32)
+    if not isinstance(pass_sel, list):
+        pass_sel = [pass_sel]
+
+    pass_sel = [p.astype(np.float32) for p in pass_sel]
 
     # Check inputs
-    assert len(x) == len(pass_sel)
     if weight:
         assert len(x) == len(weight)
+    for p in pass_sel:
+        assert len(x) == len(p)
 
-    efficiency = []
+    efficiency = [[] for p in pass_sel]
+
     for i in range(nbootstrap):
         idx = np.random.randint(len(x), size=len(x))
         x_bs = x[idx]
 
         # Weight of passing events
-        pass_weight_bs = pass_sel[idx]
+        pass_weight_bs = [p[idx] for p in pass_sel]
         if weight:
             weight_bs = weight[idx]
-            pass_weight_bs *= weight_bs
+            pass_weight_bs = [weight_bs * p for p in pass_weight_bs]
 
         # Pass selection
-        p, _, _ = binned_statistic(x, pass_weight_bs, statistic="sum",
-                                      **kwargs)
+        pass_hists = []
+        for p in pass_weight_bs:
+            pass_hist, _, _ = binned_statistic(x, p, statistic="sum", **kwargs)
+            pass_hists.append(pass_hist)
 
         # Total
         if weight:
-            t, _, _ = binned_statistic(x, weight_bs, statistic="sum",
-                                          **kwargs)
+            total_hist, _, _ = binned_statistic(x, weight_bs, statistic="sum",
+                                                **kwargs)
         else:
-            t, _, _ = binned_statistic(x, pass_weight_bs, statistic="count",
-                                          **kwargs)
+            total_hist, _, _ = binned_statistic(x, None, statistic="count",
+                                                **kwargs)
 
-        efficiency.append(p / t)
-
-    efficiency = np.array(efficiency)
-
-    if return_inverse:
-        efficiency = 1.0 / efficiency
-
-    perc_lo = (100.0 - ci) / 2.0
-    perc_hi = 100.0 - perc_lo
-
-    ci_lo, ci_hi = np.percentile(efficiency, [perc_lo, perc_hi], axis=0)
-    mean = np.mean(efficiency, axis=0)
-    median = np.median(efficiency, axis=0)
+        for i, pass_hist in enumerate(pass_hists):
+            efficiency[i].append(pass_hist / total_hist)
 
     efficiency_ci = namedtuple("EfficiencyCI", ["mean", "median", "ci"])
-    return efficiency_ci(mean=mean, median=median, ci=(ci_lo, ci_hi))
+    return_eff = []
+
+    for i, eff in enumerate(efficiency):
+        eff = np.array(eff)
+
+        if return_inverse:
+            eff = 1.0 / eff
+
+        perc_lo = (100.0 - ci) / 2.0
+        perc_hi = 100.0 - perc_lo
+
+        ci_lo, ci_hi = np.percentile(eff, [perc_lo, perc_hi], axis=0)
+        mean = np.mean(eff, axis=0)
+        median = np.median(eff, axis=0)
+
+        return_eff.append(efficiency_ci(mean=mean, median=median,
+                                        ci=(ci_lo, ci_hi)))
+
+    return return_eff

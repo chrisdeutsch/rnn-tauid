@@ -281,36 +281,55 @@ class FlattenerEfficiencyPlot(Plot):
 
 
 class EfficiencyPlot(Plot):
-    # TODO: Plot vs arbitrary variable
-    # TODO: Plot for multiple scores
-    def __init__(self, score, eff, xvar, bins=10, scale=1.0):
+    def __init__(self, scores, eff, xvar, bins=10, scale=1.0, label=None):
         super(EfficiencyPlot, self).__init__()
 
-        self.score = score
+        if not isinstance(scores, list):
+            scores = [scores]
+
+        self.scores = scores
+
+        if label:
+            if not isinstance(label, list):
+                label = [label]
+
+            assert len(label) == len(scores)
+        else:
+            label = [s.split("/")[-1] for s in scores]
+
+        self.label = label
+
         self.eff = eff
         self.xvar = xvar
-        self.scale = scale
         self.bins = bins / scale
-
+        self.scale = scale
 
 
     def plot(self, sh):
         # Flatten on training sample
         sig_train = sh.sig_train.get_variables("TauJets/pt", "TauJets/mu",
-                                               self.score)
-        flat = Flattener(pt_bins, mu_bins, self.eff)
-        flat.fit(sig_train["TauJets/pt"], sig_train["TauJets/mu"],
-                 sig_train[self.score])
+                                               *self.scores)
 
-        # Efficiency on testing sample
+        # Determine flattening on training sample for all scores
+        flat_dict = {}
+        for s in self.scores:
+            flat_dict[s] = Flattener(pt_bins, mu_bins, self.eff)
+            flat_dict[s].fit(sig_train["TauJets/pt"], sig_train["TauJets/mu"],
+                             sig_train[s])
+
+        # Variables to determine working points on testing sample
         sig_test = sh.sig_test.get_variables("TauJets/pt", "TauJets/mu",
-                                             self.score, self.xvar)
-        pass_thr = flat.passes_thr(sig_test["TauJets/pt"],
-                                   sig_test["TauJets/mu"],
-                                   sig_test[self.score])
+                                             self.xvar, *self.scores)
 
-        eff = binned_efficiency_ci(sig_test[self.xvar], pass_thr,
-                                   bins=self.bins)
+        # Check which events pass the working point for each score
+        pass_thr = []
+        for s in self.scores:
+            pass_thr.append(flat_dict[s].passes_thr(sig_test["TauJets/pt"],
+                                                    sig_test["TauJets/mu"],
+                                                    sig_test[s]))
+
+        efficiencies = binned_efficiency_ci(sig_test[self.xvar], pass_thr,
+                                            bins=self.bins)
 
         # Plot
         fig, ax = plt.subplots()
@@ -318,14 +337,19 @@ class EfficiencyPlot(Plot):
         bin_center = self.scale * (self.bins[1:] + self.bins[:-1]) / 2.0
         bin_half_width = self.scale * (self.bins[1:] - self.bins[:-1]) / 2.0
 
-        ci_lo, ci_hi = eff.ci
+        for z, (eff, c, label) in enumerate(
+                zip(efficiencies, colorseq, self.label)):
+            ci_lo, ci_hi = eff.ci
+            yerr = np.vstack([eff.median - ci_lo, ci_hi - eff.median])
 
-        yerr = np.vstack([eff.median - ci_lo, ci_hi - eff.median])
-        ax.errorbar(bin_center, eff.median,
-                    xerr=bin_half_width,
-                    yerr=yerr,
-                    fmt="o", color=colors["red"])
-        ax.set_ylabel("Signal efficiency", y=1, ha="right")
+            ax.errorbar(bin_center, eff.median,
+                        xerr=bin_half_width,
+                        yerr=yerr,
+                        fmt="o", color=c, label=label, zorder=z)
+
+        ax.set_xlabel(self.xvar.split("/")[-1], x=1, ha="right")
+        ax.set_ylabel("Efficiency", y=1, ha="right")
+        ax.legend()
 
         return fig
 

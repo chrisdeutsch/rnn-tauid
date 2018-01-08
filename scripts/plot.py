@@ -105,10 +105,10 @@ def main(args):
         # ("flat60", FlattenerCutmapPlot("score", 0.6)),
         # ("flat45", FlattenerCutmapPlot("score", 0.45)),
         # ("flat60_eff", FlattenerEfficiencyPlot("score", 0.6))
-        ("eff_pt", EfficiencyPlot("score", 0.6, "TauJets/pt",
+        ("eff_pt", EfficiencyPlot(["score", "TauJets/BDTJetScore"], 0.6, "TauJets/pt",
                                   bins=np.linspace(20, 500, 21), scale=1e-3)),
-        ("eff_mu", EfficiencyPlot("score", 0.6, "TauJets/mu",
-                                  bins=np.linspace(0, 60, 10)))
+        ("eff_mu", EfficiencyPlot(["score", "TauJets/BDTJetScore"], 0.6, "TauJets/mu",
+                                  bins=np.linspace(0, 45, 10)))
     ]
 
     if not path.exists(args.outdir):
