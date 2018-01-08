@@ -10,7 +10,8 @@ def main(args):
     from tqdm import tqdm
     import numpy as np
     from rnn_tauid.plotting.common import ScorePlot, ROC, ROCRatio, \
-        FlattenerCutmapPlot, FlattenerEfficiencyPlot, EfficiencyPlot
+        FlattenerCutmapPlot, FlattenerEfficiencyPlot, EfficiencyPlot, \
+        RejectionPlot
     from rnn_tauid.plotting.utils import Sample, SampleHolder
 
     # Find sample files
@@ -108,7 +109,12 @@ def main(args):
         ("eff_pt", EfficiencyPlot(["score", "TauJets/BDTJetScore"], 0.6, "TauJets/pt",
                                   bins=np.linspace(20, 500, 21), scale=1e-3)),
         ("eff_mu", EfficiencyPlot(["score", "TauJets/BDTJetScore"], 0.6, "TauJets/mu",
-                                  bins=np.linspace(0, 45, 10)))
+                                  bins=np.linspace(0, 45, 10))),
+        ("eff_nvtx", EfficiencyPlot(["score"], 0.6, "TauJets/nVtxPU",
+                                    bins=np.linspace(0, 35, 9))),
+        ("rej_pt", RejectionPlot(
+            ["score", "TauJets/BDTJetScore"], 0.6, "TauJets/pt",
+            bins=10 ** np.linspace(np.log10(20), np.log10(200), 9), scale=1e-3))
     ]
 
     if not path.exists(args.outdir):

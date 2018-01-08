@@ -354,9 +354,85 @@ class EfficiencyPlot(Plot):
         return fig
 
 
-class RatioPlot(Plot):
-    pass
-
-
 class RejectionPlot(Plot):
+    def __init__(self, scores, eff, xvar, bins=10, scale=1.0, label=None):
+        super(RejectionPlot, self).__init__()
+
+        if not isinstance(scores, list):
+            scores = [scores]
+
+        self.scores = scores
+
+        if label:
+            if not isinstance(label, list):
+                label = [label]
+
+            assert len(label) == len(scores)
+        else:
+            label = [s.split("/")[-1] for s in scores]
+
+        self.label = label
+
+        self.eff = eff
+        self.xvar = xvar
+        self.bins = bins / scale
+        self.scale = scale
+
+
+    def plot(self, sh):
+        # Flatten on training sample
+        sig_train = sh.sig_train.get_variables("TauJets/pt", "TauJets/mu",
+                                               *self.scores)
+
+        # Determine flattening on training sample for all scores
+        flat_dict = {}
+        for s in self.scores:
+            flat_dict[s] = Flattener(pt_bins, mu_bins, self.eff)
+            flat_dict[s].fit(sig_train["TauJets/pt"], sig_train["TauJets/mu"],
+                             sig_train[s])
+
+        # Variables to determine working points on testing sample
+        sig_test = sh.sig_test.get_variables("TauJets/pt")
+        bkg_test = sh.bkg_test.get_variables("TauJets/pt", "TauJets/mu",
+                                             self.xvar, *self.scores)
+
+        # Kinematic reweighting
+        sig_test_weight, bkg_test_weight = pt_reweight(
+            sig_test["TauJets/pt"], bkg_test["TauJets/pt"])
+
+        # Check which events pass the working point for each score
+        pass_thr = []
+        for s in self.scores:
+            pass_thr.append(flat_dict[s].passes_thr(bkg_test["TauJets/pt"],
+                                                    bkg_test["TauJets/mu"],
+                                                    bkg_test[s]))
+
+        rejections = binned_efficiency_ci(bkg_test[self.xvar], pass_thr,
+                                          bins=self.bins, return_inverse=True)
+
+        # Plot
+        fig, ax = plt.subplots()
+
+        bin_center = self.scale * (self.bins[1:] + self.bins[:-1]) / 2.0
+        bin_half_width = self.scale * (self.bins[1:] - self.bins[:-1]) / 2.0
+
+        for z, (rej, c, label) in enumerate(
+                zip(rejections, colorseq, self.label)):
+            ci_lo, ci_hi = rej.ci
+            yerr = np.vstack([rej.median - ci_lo, ci_hi - rej.median])
+
+            ax.errorbar(bin_center, rej.median,
+                        xerr=bin_half_width,
+                        yerr=yerr,
+                        fmt="o", color=c, label=label, zorder=z)
+
+        ax.set_xlabel(self.xvar.split("/")[-1], x=1, ha="right")
+        ax.set_ylabel("Rejection", y=1, ha="right")
+        ax.legend()
+
+        return fig
+
+
+
+class RatioPlot(Plot):
     pass

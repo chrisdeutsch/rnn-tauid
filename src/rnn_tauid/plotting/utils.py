@@ -144,15 +144,15 @@ def binned_efficiency_ci(x, pass_sel, weight=None, ci=68.3, nbootstrap=100,
         # Pass selection
         pass_hists = []
         for p in pass_weight_bs:
-            pass_hist, _, _ = binned_statistic(x, p, statistic="sum", **kwargs)
+            pass_hist, _, _ = binned_statistic(x_bs, p, statistic="sum", **kwargs)
             pass_hists.append(pass_hist)
 
         # Total
         if weight:
-            total_hist, _, _ = binned_statistic(x, weight_bs, statistic="sum",
+            total_hist, _, _ = binned_statistic(x_bs, weight_bs, statistic="sum",
                                                 **kwargs)
         else:
-            total_hist, _, _ = binned_statistic(x, None, statistic="count",
+            total_hist, _, _ = binned_statistic(x_bs, None, statistic="count",
                                                 **kwargs)
 
         for i, pass_hist in enumerate(pass_hists):
