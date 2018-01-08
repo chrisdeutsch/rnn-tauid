@@ -166,7 +166,6 @@ def main(args):
             fig = p.plot(inputs[key])
             outf_pdf = "{}_{}.pdf".format(name, key)
             fig.savefig(path.join(args.outdir, outf_pdf))
-            fig.close()
 
 
 if __name__ == "__main__":
