@@ -94,39 +94,66 @@ def main(args):
         inputs["3P"] = samples_3p
 
 
-    plots = [
-        # ("scoreplot", ScorePlot()),
-        # ("scoreplot_log", ScorePlot(log_y=True)),
-        # ("scoreplot_comparison", ScorePlot(train=True)),
-        # ("scoreplot_comparison_log", ScorePlot(log_y=True, train=True)),
-        # ("roc", ROC(["TauJets/BDTJetScore", "TauJets/RNNJetScore", "score"])),
-        # ("roc_ratio", ROCRatio([("score", "TauJets/BDTJetScore"),
-        #                         ("score", "TauJets/RNNJetScore")]))
-        # ("flat75", FlattenerCutmapPlot("score", 0.75)),
-        # ("flat60", FlattenerCutmapPlot("score", 0.6)),
-        # ("flat45", FlattenerCutmapPlot("score", 0.45)),
-        # ("flat60_eff", FlattenerEfficiencyPlot("score", 0.6))
-        ("eff_pt", EfficiencyPlot(["score", "TauJets/BDTJetScore"], 0.6, "TauJets/pt",
-                                  bins=np.linspace(20, 500, 21), scale=1e-3)),
-        ("eff_mu", EfficiencyPlot(["score", "TauJets/BDTJetScore"], 0.6, "TauJets/mu",
-                                  bins=np.linspace(0, 45, 10))),
-        ("eff_nvtx", EfficiencyPlot(["score"], 0.6, "TauJets/nVtxPU",
-                                    bins=np.linspace(0, 35, 9))),
-        ("rej_pt", RejectionPlot(
-            ["score", "TauJets/BDTJetScore"], 0.6, "TauJets/pt",
-            bins=10 ** np.linspace(np.log10(20), np.log10(200), 9), scale=1e-3))
+    plots = []
+
+    plots += [
+        ("score", ScorePlot()),
+        ("score_log", ScorePlot(log_y=True)),
+        ("score_comp", ScorePlot(train=True)),
+        ("score_comp_log", ScorePlot(log_y=True, train=True))
     ]
+
+    plots += [
+        ("roc", ROC(["score", "TauJets/RNNJetScore", "TauJets/BDTJetScore"])),
+        ("roc_ratio", ROCRatio([("score", "TauJets/BDTJetScore"),
+                                ("score", "TauJets/RNNJetScore")]))
+    ]
+
+    wp_effs = [95, 85, 75, 60, 45]
+
+    for eff in wp_effs:
+        plots += [
+            ("flat{}_cutmap".format(eff),
+             FlattenerCutmapPlot("score", eff / 100.0)),
+            ("flat{}_eff".format(eff),
+             FlattenerEfficiencyPlot("score",eff / 100.0)),
+            ("eff_pt_{}".format(eff),
+             EfficiencyPlot(["score", "TauJets/BDTJetScore"], eff / 100.0,
+                            "TauJets/pt", bins=np.linspace(20, 400, 16),
+                            scale=1e-3)),
+            ("eff_mu_{}".format(eff),
+             EfficiencyPlot(["score", "TauJets/BDTJetScore"], eff / 100.0,
+                            "TauJets/mu", bins=np.linspace(0, 45, 9),
+                            scale=1e-3)),
+            ("eff_nvtx_{}".format(eff),
+             EfficiencyPlot(["score", "TauJets/BDTJetScore"], eff / 100.0,
+                            "TauJets/nVtxPU", bins=np.linspace(0, 35, 9))),
+            ("eff_eta_{}".format(eff),
+             EfficiencyPlot(["score", "TauJets/BDTJetScore"], eff / 100.0,
+                            "TauJets/eta", bins=np.linspace(-2.5, 2.5, 21))),
+            ("rej_pt_{}".format(eff),
+             RejectionPlot(["score", "TauJets/BDTJetScore"], eff / 100.0,
+                           "TauJets/pt", bins=10 ** np.linspace(
+                               np.log10(20),np.log10(200), 9),
+                           scale=1e-3)),
+            ("rej_mu_{}".format(eff),
+             RejectionPlot(["score", "TauJets/BDTJetScore"], eff / 100.0,
+                           "TauJets/mu", bins=np.linspace(0, 45, 9))),
+            ("rej_nvtx_{}".format(eff),
+             RejectionPlot(["score", "TauJets/BDTJetScore"], eff / 100.0,
+                           "TauJets/nVtxPU", bins=np.linspace(0, 35, 9))),
+            ("rej_eta_{}".format(eff),
+             RejectionPlot(["score", "TauJets/BDTJetScore"], eff / 100.0,
+                           "TauJets/eta", bins=np.linspace(-2.5, 2.5, 21)))
+        ]
 
     if not path.exists(args.outdir):
         os.mkdir(args.outdir)
 
     for key in tqdm(inputs):
         for name, p in tqdm(plots):
-            # TODO: Wrap in try block
             fig = p.plot(inputs[key])
-
             outf_pdf = "{}_{}.pdf".format(name, key)
-
             fig.savefig(path.join(args.outdir, outf_pdf))
 
 
