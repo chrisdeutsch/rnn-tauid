@@ -9,10 +9,15 @@ def main(args):
     from glob import glob
     from tqdm import tqdm
     import numpy as np
+
+    import matplotlib
+    matplotlib.use("PDF")
+
     from rnn_tauid.plotting.common import ScorePlot, ROC, ROCRatio, \
         FlattenerCutmapPlot, FlattenerEfficiencyPlot, EfficiencyPlot, \
         RejectionPlot
     from rnn_tauid.plotting.utils import Sample, SampleHolder
+
 
     # Find sample files
     pattern = re.compile(r".*(?P<s>sig|bkg)"
