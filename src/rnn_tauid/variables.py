@@ -226,7 +226,7 @@ cluster_vars = [
 id1p_vars = [
     ("TauJets/centFrac", centFrac_trans, scale_flat),
     ("TauJets/etOverPtLeadTrk", etOverPtLeadTrk_trans, scale_flat),
-    ("TauJets/innerTrkAvgDist", None, scale_flat),
+    ("TauJets/dRmax", None, scale_flat),
     ("TauJets/absipSigLeadTrk", absipSigLeadTrk_trans, scale_flat),
     ("TauJets/SumPtTrkFrac", None, scale_flat),
     ("TauJets/EMPOverTrkSysP", EMPOverTrkSysP_trans, scale_flat),
