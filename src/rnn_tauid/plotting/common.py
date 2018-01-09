@@ -281,7 +281,8 @@ class FlattenerEfficiencyPlot(Plot):
 
 
 class EfficiencyPlot(Plot):
-    def __init__(self, scores, eff, xvar, bins=10, scale=1.0, label=None):
+    def __init__(self, scores, eff, xvar, bins=10, scale=1.0, label=None,
+                 ylim=None):
         super(EfficiencyPlot, self).__init__()
 
         if not isinstance(scores, list):
@@ -303,6 +304,7 @@ class EfficiencyPlot(Plot):
         self.xvar = xvar
         self.bins = bins / scale
         self.scale = scale
+        self.ylim = ylim
 
 
     def plot(self, sh):
@@ -347,6 +349,13 @@ class EfficiencyPlot(Plot):
                         yerr=yerr,
                         fmt="o", color=c, label=label, zorder=z)
 
+        if self.ylim:
+            ax.set_ylim(ylim)
+        else:
+            y_lo, y_hi = ax.get_ylim()
+            d = 0.05 * (y_hi - y_lo)
+            ax.set_ylim(y_lo - d, y_hi + d)
+
         ax.set_xlabel(self.xvar.split("/")[-1], x=1, ha="right")
         ax.set_ylabel("Efficiency", y=1, ha="right")
         ax.legend()
@@ -355,7 +364,8 @@ class EfficiencyPlot(Plot):
 
 
 class RejectionPlot(Plot):
-    def __init__(self, scores, eff, xvar, bins=10, scale=1.0, label=None):
+    def __init__(self, scores, eff, xvar, bins=10, scale=1.0, label=None,
+                 ylim=None):
         super(RejectionPlot, self).__init__()
 
         if not isinstance(scores, list):
@@ -377,6 +387,7 @@ class RejectionPlot(Plot):
         self.xvar = xvar
         self.bins = bins / scale
         self.scale = scale
+        self.ylim = ylim
 
 
     def plot(self, sh):
@@ -425,6 +436,13 @@ class RejectionPlot(Plot):
                         xerr=bin_half_width,
                         yerr=yerr,
                         fmt="o", color=c, label=label, zorder=z)
+
+        if self.ylim:
+            ax.set_ylim(ylim)
+        else:
+            y_lo, y_hi = ax.get_ylim()
+            d = 0.05 * (y_hi - y_lo)
+            ax.set_ylim(y_lo - d, y_hi + d)
 
         ax.set_xlabel(self.xvar.split("/")[-1], x=1, ha="right")
         ax.set_ylabel("Rejection", y=1, ha="right")
