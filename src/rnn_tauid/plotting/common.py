@@ -419,6 +419,7 @@ class RejectionPlot(Plot):
                                                     bkg_test[s]))
 
         rejections = binned_efficiency_ci(bkg_test[self.xvar], pass_thr,
+                                          weight=bkg_test_weight,
                                           bins=self.bins, return_inverse=True)
 
         # Plot
@@ -449,8 +450,3 @@ class RejectionPlot(Plot):
         ax.legend()
 
         return fig
-
-
-
-class RatioPlot(Plot):
-    pass
