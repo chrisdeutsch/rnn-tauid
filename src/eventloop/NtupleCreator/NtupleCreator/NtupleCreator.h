@@ -72,9 +72,6 @@ public:
     vfloat m_trk_dPhi; //!
     vfloat m_trk_z0sinThetaTJVA; //!
     vfloat m_trk_d0; //!
-    vfloat m_trk_dRJetSeedAxis; //!
-    vfloat m_trk_eProbabilityHT; //!
-    vfloat m_trk_d0sig; //!
     vuint8 m_trk_nInnermostPixelHits; //!
     vuint8 m_trk_nPixelHits; //!
     vuint8 m_trk_nSCTHits; //!
@@ -88,7 +85,6 @@ public:
     vfloat m_cls_phi; //!
     vfloat m_cls_dEta; //!
     vfloat m_cls_dPhi; //!
-    vfloat m_cls_dRJetSeedAxis; //!
     vfloat m_cls_SECOND_R; //!
     vfloat m_cls_SECOND_LAMBDA; //!
     vfloat m_cls_CENTER_LAMBDA; //!

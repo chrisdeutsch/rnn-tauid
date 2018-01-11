@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 set -e
 
-MXAOD_DIR="MxAOD_v11/"
-OUTDIR="ntuples_v11/"
+MXAOD_DIR="MxAOD_v12/"
+OUTDIR="ntuples_v12/"
 FLAGS="--rnnscore"
 
 echo "Input MxAOD directory: $MXAOD_DIR"
