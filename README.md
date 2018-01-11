@@ -82,6 +82,13 @@ source ${AnalysisBase_PLATFORM}/setup.sh
 
 TODO: Explain workflow including external packages
 
+## Convert trained model
+
+```
+lwtnn-split-keras-network.py model.h5
+kerasfunc2json.py architecture.json weights.json | fill-lwtnn-varspec.py preproc.h5 | kerasfunc2json.py architecture.json weights.json /dev/stdin > nn.json
+```
+
 ## TODOs
 
 - Implement the most important plots for performance evaluation
