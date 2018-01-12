@@ -116,7 +116,7 @@ def roc_ratio(y_true, y1, y2, **kwargs):
     return eff, ratio
 
 
-def binned_efficiency_ci(x, pass_sel, weight=None, ci=68.3, nbootstrap=100,
+def binned_efficiency_ci(x, pass_sel, weight=None, ci=68.3, nbootstrap=200,
                          return_inverse=False, **kwargs):
     if not isinstance(pass_sel, list):
         pass_sel = [pass_sel]
@@ -124,7 +124,7 @@ def binned_efficiency_ci(x, pass_sel, weight=None, ci=68.3, nbootstrap=100,
     pass_sel = [p.astype(np.float32) for p in pass_sel]
 
     # Check inputs
-    if weight:
+    if weight is not None:
         assert len(x) == len(weight)
     for p in pass_sel:
         assert len(x) == len(p)
@@ -137,7 +137,7 @@ def binned_efficiency_ci(x, pass_sel, weight=None, ci=68.3, nbootstrap=100,
 
         # Weight of passing events
         pass_weight_bs = [p[idx] for p in pass_sel]
-        if weight:
+        if weight is not None:
             weight_bs = weight[idx]
             pass_weight_bs = [weight_bs * p for p in pass_weight_bs]
 
@@ -148,7 +148,7 @@ def binned_efficiency_ci(x, pass_sel, weight=None, ci=68.3, nbootstrap=100,
             pass_hists.append(pass_hist)
 
         # Total
-        if weight:
+        if weight is not None:
             total_hist, _, _ = binned_statistic(x_bs, weight_bs, statistic="sum",
                                                 **kwargs)
         else:
