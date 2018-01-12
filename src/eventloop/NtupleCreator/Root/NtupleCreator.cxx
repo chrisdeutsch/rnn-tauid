@@ -104,9 +104,6 @@ EL::StatusCode NtupleCreator::histInitialize()
     m_tree->Branch("TauTracks.dPhi", &m_trk_dPhi);
     m_tree->Branch("TauTracks.z0sinThetaTJVA", &m_trk_z0sinThetaTJVA);
     m_tree->Branch("TauTracks.d0", &m_trk_d0);
-    m_tree->Branch("TauTracks.dRJetSeedAxis", &m_trk_dRJetSeedAxis);
-    m_tree->Branch("TauTracks.eProbabilityHT", &m_trk_eProbabilityHT);
-    m_tree->Branch("TauTracks.d0sig", &m_trk_d0sig);
     m_tree->Branch("TauTracks.nInnermostPixelHits", &m_trk_nInnermostPixelHits);
     m_tree->Branch("TauTracks.nPixelHits", &m_trk_nPixelHits);
     m_tree->Branch("TauTracks.nSCTHits", &m_trk_nSCTHits);
@@ -120,7 +117,6 @@ EL::StatusCode NtupleCreator::histInitialize()
     m_tree->Branch("TauClusters.phi", &m_cls_phi);
     m_tree->Branch("TauClusters.dEta", &m_cls_dEta);
     m_tree->Branch("TauClusters.dPhi", &m_cls_dPhi);
-    m_tree->Branch("TauClusters.dRJetSeedAxis", &m_cls_dRJetSeedAxis);
     m_tree->Branch("TauClusters.SECOND_R", &m_cls_SECOND_R);
     m_tree->Branch("TauClusters.SECOND_LAMBDA", &m_cls_SECOND_LAMBDA);
     m_tree->Branch("TauClusters.CENTER_LAMBDA", &m_cls_CENTER_LAMBDA);
@@ -188,7 +184,8 @@ EL::StatusCode NtupleCreator::execute()
         m_ptJetSeed = tau->auxdata<float>("trk_ptJetSeed");
         m_etaJetSeed = tau->auxdata<float>("trk_etaJetSeed");
         m_phiJetSeed = tau->auxdata<float>("trk_phiJetSeed");
-        m_BDTJetScore = tau->discriminant(xAOD::TauJetParameters::TauID::BDTJetScore);
+        m_BDTJetScore = tau->discriminant(xAOD::TauJetParameters::TauID::
+                                          BDTJetScore);
 
         if (m_deco_rnnscore) {
             m_RNNJetScore = tau->auxdata<float>("RNNJetScore");
@@ -227,10 +224,8 @@ EL::StatusCode NtupleCreator::execute()
         m_trk_dPhi = tau->auxdata<vfloat>("trk_dPhi");
         m_trk_z0sinThetaTJVA = tau->auxdata<vfloat>("trk_z0sinThetaTJVA");
         m_trk_d0 = tau->auxdata<vfloat>("trk_d0");
-        m_trk_dRJetSeedAxis = tau->auxdata<vfloat>("trk_dRJetSeedAxis");
-        m_trk_eProbabilityHT = tau->auxdata<vfloat>("trk_eProbabilityHT");
-        m_trk_d0sig = tau->auxdata<vfloat>("trk_d0sig");
-        m_trk_nInnermostPixelHits = tau->auxdata<vuint8>("trk_nInnermostPixelHits");
+        m_trk_nInnermostPixelHits = tau->auxdata<vuint8>(
+            "trk_nInnermostPixelHits");
         m_trk_nPixelHits = tau->auxdata<vuint8>("trk_nPixelHits");
         m_trk_nSCTHits = tau->auxdata<vuint8>("trk_nSCTHits");
         m_trk_isLoose = tau->auxdata<vuint8>("trk_isLoose");
@@ -243,7 +238,6 @@ EL::StatusCode NtupleCreator::execute()
         m_cls_phi = tau->auxdata<vfloat>("cls_phi");
         m_cls_dEta = tau->auxdata<vfloat>("cls_dEta");
         m_cls_dPhi = tau->auxdata<vfloat>("cls_dPhi");
-        m_cls_dRJetSeedAxis = tau->auxdata<vfloat>("cls_dRJetSeedAxis");
         m_cls_SECOND_R = tau->auxdata<vfloat>("cls_SECOND_R");
         m_cls_SECOND_LAMBDA = tau->auxdata<vfloat>("cls_SECOND_LAMBDA");
         m_cls_CENTER_LAMBDA = tau->auxdata<vfloat>("cls_CENTER_LAMBDA");

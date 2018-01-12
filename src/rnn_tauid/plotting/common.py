@@ -450,8 +450,3 @@ class RejectionPlot(Plot):
         ax.legend()
 
         return fig
-
-
-
-class RatioPlot(Plot):
-    pass
