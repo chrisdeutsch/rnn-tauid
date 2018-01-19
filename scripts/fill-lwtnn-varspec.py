@@ -60,12 +60,12 @@ if __name__ == "__main__":
 
     # Output node names
     assert(len(output_layer["labels"]) == 1)
-    output_layer["labels"][0] = "rnnid"
+    output_layer["labels"][0] = "sig_prob"
 
     # Set input layer variables
 
     # Set BDT input variables
-    config["inputs"][0]["name"] = "id_vars"
+    config["inputs"][0]["name"] = "scalar"
     variables = config["inputs"][0]["variables"]
     n_vars = len(variables)
 
