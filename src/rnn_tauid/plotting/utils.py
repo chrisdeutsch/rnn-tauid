@@ -116,7 +116,7 @@ def roc_ratio(y_true, y1, y2, **kwargs):
     return eff, ratio
 
 
-def binned_efficiency_ci(x, pass_sel, weight=None, ci=68.3, nbootstrap=100,
+def binned_efficiency_ci(x, pass_sel, weight=None, ci=68.3, nbootstrap=200,
                          return_inverse=False, **kwargs):
     if not isinstance(pass_sel, list):
         pass_sel = [pass_sel]
