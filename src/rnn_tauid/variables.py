@@ -101,7 +101,7 @@ def mEflowApprox_trans(datafile, dest, source_sel=None, dest_sel=None):
 def ptIntermediateAxis_trans(datafile, dest, source_sel=None, dest_sel=None):
     datafile["TauJets/ptIntermediateAxis"].read_direct(
         dest, source_sel=source_sel, dest_sel=dest_sel)
-    np.maximum(dest[dest_sel] / 1000.0, 100.0, out=dest[dest_sel])
+    np.minimum(dest[dest_sel] / 1000.0, 100.0, out=dest[dest_sel])
     np.log10(dest[dest_sel], out=dest[dest_sel])
 
 def trFlightPathSig_trans(datafile, dest, source_sel=None, dest_sel=None):
