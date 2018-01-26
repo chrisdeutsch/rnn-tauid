@@ -98,7 +98,7 @@ def load_vars(var_module=None, tag=None):
 
     # Load variables from module
     if var_module:
-        mod = imp.load_soure("var_module", var_module)
+        mod = imp.load_source("var_module", var_module)
         if hasattr(mod, "jet_vars"):
             jet_vars = mod.jet_vars
         if hasattr(mod, "trk_vars"):
