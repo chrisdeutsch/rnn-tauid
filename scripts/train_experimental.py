@@ -57,38 +57,54 @@ def main(args):
                              trk_vars, num=args.num_tracks)
 
         # Load cluster data
-        cls_data = load_data(sig, bkg, np.s_[:sig_idx], np.s_[:bkg_idx],
-                             cls_vars, num=args.num_clusters)
+        if args.do_clusters:
+            cls_data = load_data(sig, bkg, np.s_[:sig_idx], np.s_[:bkg_idx],
+                                 cls_vars, num=args.num_clusters)
 
 
     # Validation split
-    jet_train, jet_test, trk_train, trk_test, cls_train, cls_test = \
-        train_test_split([jet_data, trk_data, cls_data],
-                         test_size=args.test_size)
+    if args.do_clusters:
+        jet_train, jet_test, trk_train, trk_test, cls_train, cls_test = \
+            train_test_split([jet_data, trk_data, cls_data],
+                             test_size=args.test_size)
+    else:
+        jet_train, jet_test, trk_train, trk_test = train_test_split(
+            [jet_data, trk_data, cls_data], test_size=args.test_size)
 
     # Apply preprocessing functions
     jet_preproc = preprocess(jet_train, jet_test, jet_preproc_func)
     trk_preproc = preprocess(trk_train, trk_test, trk_preproc_func)
-    cls_preproc = preprocess(cls_train, cls_test, cls_preproc_func)
+    if args.do_clusters:
+        cls_preproc = preprocess(cls_train, cls_test, cls_preproc_func)
 
-    for variables, preprocessing in [(jet_varnames, jet_preproc),
-                                     (trk_varnames, trk_preproc),
-                                     (cls_varnames, cls_preproc)]:
+    preproc_results = [(jet_varnames, jet_preproc),
+                       (trk_varnames, trk_preproc)]
+    if args.do_clusters:
+        preproc_results.append((cls_varnames, cls_preproc))
+
+    for variables, preprocessing in preproc_results:
         for var, (offset, scale) in zip(variables, preprocessing):
             print(var + ":")
             print("offsets:\n" + str(offset))
             print("scales:\n" + str(scale) + "\n")
 
-    # Save offsets and scales to hdf5 files (TODO: save to single file)
-    save_preprocessing(args.preprocessing,
+    # Save offsets and scales to hdf5 files
+    save_kwargs = dict(
         jet_preproc=(jet_varnames, jet_preproc),
-        trk_preproc=(trk_varnames, trk_preproc),
-        cls_preproc=(cls_varnames, cls_preproc))
+        trk_preproc=(trk_varnames, trk_preproc)
+    )
+    if args.do_clusters:
+        save_kwargs["cls_preproc"] = (cls_varnames, cls_preproc)
+
+    save_preprocessing(args.preprocessing, **save_kwargs)
 
     # Setup training
     shape_jet = jet_train.x.shape[1:]
     shape_trk = trk_train.x.shape[1:]
-    shape_cls = cls_train.x.shape[1:]
+    if args.do_clusters:
+        shape_cls = cls_train.x.shape[1:]
+    else:
+        shape_cls = None
 
     model = experimental_model(
         shape_trk, shape_cls, shape_jet,
@@ -104,9 +120,9 @@ def main(args):
         dense_units_3_2=args.dense_units_3_2,
         dense_units_3_3=args.dense_units_3_3,
         merge_dense_units_1=args.merge_dense_units_1,
-        merge_dense_units_2=args.merge_dense_units_2)
+        merge_dense_units_2=args.merge_dense_units_2,
+        incl_clusters=args.do_clusters)
     model.summary()
-
 
     opt = SGD(lr=0.01, momentum=0.9, nesterov=True)
     model.compile(loss="binary_crossentropy", optimizer=opt,
@@ -131,13 +147,20 @@ def main(args):
     callbacks.append(reduce_lr)
 
     # Start training
-    hist = model.fit(
-        [trk_train.x, cls_train.x, jet_train.x], trk_train.y,
-        sample_weight=trk_train.w,
-        validation_data=([trk_test.x, cls_test.x, jet_test.x],
-                         trk_test.y, trk_test.w),
-        epochs=args.epochs, batch_size=args.batch_size,
-        callbacks=callbacks, verbose=1)
+    if args.do_clusters:
+        hist = model.fit(
+            [trk_train.x, cls_train.x, jet_train.x], trk_train.y,
+            sample_weight=trk_train.w,
+            validation_data=([trk_test.x, cls_test.x, jet_test.x],
+                             trk_test.y, trk_test.w),
+            epochs=args.epochs, batch_size=args.batch_size,
+            callbacks=callbacks, verbose=1)
+    else:
+        hist = model.fit(
+            [trk_train.x, jet_train.x], trk_train.y, sample_weight=trk_train.w,
+            validation_data=([trk_test.x, jet_test.x], trk_test.y, trk_test.w),
+            epochs=args.epochs, batch_size=args.batch_size, callbacks=callbacks,
+            verbose=1)
 
     # Determine best epoch & validation loss
     val_loss, epoch = min(zip(hist.history["val_loss"], hist.epoch))
@@ -182,6 +205,8 @@ if __name__ == "__main__":
 
     arch.add_argument("--merge-dense-units-1", type=int, default=64)
     arch.add_argument("--merge-dense-units-2", type=int, default=32)
+
+    arch.add_argument("--no-clusters", dest="do_clusters", action="store_false")
 
     args = parser.parse_args()
     main(args)
