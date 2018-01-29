@@ -30,21 +30,33 @@ def main(args):
     cls_varnames, cls_func, _ = zip(*cls_vars)
 
     # Load preprocessing rules
-    offset, scale = load_preprocessing(args.preprocessing, "jet_preproc",
-                                       "trk_preproc", "cls_preproc")
+    if args.do_clusters:
+        offset, scale = load_preprocessing(args.preprocessing, "jet_preproc",
+                                           "trk_preproc", "cls_preproc")
+    else:
+        offset, scale = load_preprocessing(args.preprocessing, "jet_preproc",
+                                           "trk_preproc")
 
     # Load model, determine input sizes and check compatibility
     model = load_model(args.model)
 
-    assert len(model.input_shape) == 3
+    if args.do_clusters:
+        assert len(model.input_shape) == 3
+    else:
+        assert len(model.input_shape) == 2
 
-    _, n_trk, n_trk_vars = model.input_shape[0]
-    _, n_cls, n_cls_vars = model.input_shape[1]
-    _, n_jet_vars = model.input_shape[2]
+    if args.do_clusters:
+        _, n_trk, n_trk_vars = model.input_shape[0]
+        _, n_cls, n_cls_vars = model.input_shape[1]
+        _, n_jet_vars = model.input_shape[2]
+    else:
+        _, n_trk, n_trk_vars = model.input_shape[0]
+        _, n_jet_vars = model.input_shape[1]
 
     assert n_trk_vars == len(trk_varnames)
-    assert n_cls_vars == len(cls_varnames)
     assert n_jet_vars == len(jet_varnames)
+    if args.do_clusters:
+        assert n_cls_vars == len(cls_varnames)
 
     # Load data and decorate
     h5file = dict(driver="family", memb_size=8*1024**3)
@@ -57,7 +69,8 @@ def main(args):
         # Arrays to store inputs / outputs
         x_jet = np.empty((args.chunksize, n_jet_vars), dtype=np.float32)
         x_trk = np.empty((args.chunksize, n_trk, n_trk_vars), dtype=np.float32)
-        x_cls = np.empty((args.chunksize, n_cls, n_cls_vars), dtype=np.float32)
+        if args.do_clusters:
+            x_cls = np.empty((args.chunksize, n_cls, n_cls_vars), dtype=np.float32)
 
         pred = np.full(length, -999.0, dtype=np.float32)
 
@@ -66,7 +79,8 @@ def main(args):
             # Slices
             src_jet = np.s_[start:stop]
             src_trk = np.s_[start:stop, :n_trk]
-            src_cls = np.s_[start:stop, :n_cls]
+            if args.do_clusters:
+                src_cls = np.s_[start:stop, :n_cls]
 
             len_slice = stop - start
 
@@ -94,7 +108,8 @@ def main(args):
                 if func:
                     func(data, x_trk, source_sel=src_trk, dest_sel=dest)
                 else:
-                    data[varname].read_direct(x_trk, source_sel=src_trk, dest_sel=dest)
+                    data[varname].read_direct(x_trk, source_sel=src_trk,
+                                              dest_sel=dest)
 
                 # Apply offset and scale
                 x_trk[dest] -= offset["trk_preproc"][varname]
@@ -102,29 +117,40 @@ def main(args):
 
 
             # Cluster variables
-            for i, (varname, func) in enumerate(zip(cls_varnames, cls_func)):
-                # Destination slice
-                dest = np.s_[:len_slice, ..., i]
+            if args.do_clusters:
+                for i, (varname, func) in enumerate(zip(cls_varnames,
+                                                        cls_func)):
+                    # Destination slice
+                    dest = np.s_[:len_slice, ..., i]
 
-                # Call function if var is calculated. Otherwise load from file.
-                if func:
-                    func(data, x_cls, source_sel=src_cls, dest_sel=dest)
-                else:
-                    data[varname].read_direct(x_cls, source_sel=src_cls, dest_sel=dest)
+                    # Call function if var is calculated. Otherwise load from
+                    # file.
+                    if func:
+                        func(data, x_cls, source_sel=src_cls, dest_sel=dest)
+                    else:
+                        data[varname].read_direct(x_cls, source_sel=src_cls,
+                                                  dest_sel=dest)
 
-                # Apply offset and scale
-                x_cls[dest] -= offset["cls_preproc"][varname]
-                x_cls[dest] /= scale["cls_preproc"][varname]
+                    # Apply offset and scale
+                    x_cls[dest] -= offset["cls_preproc"][varname]
+                    x_cls[dest] /= scale["cls_preproc"][varname]
 
             # Replace nans
             x_jet[np.isnan(x_jet)] = 0
             x_trk[np.isnan(x_trk)] = 0
-            x_cls[np.isnan(x_cls)] = 0
+            if args.do_clusters:
+                x_cls[np.isnan(x_cls)] = 0
 
             # Predict
-            pred[start:stop] = model.predict(
-                [x_trk[:len_slice], x_cls[:len_slice], x_jet[:len_slice]],
-                batch_size=1024).ravel()
+            if args.do_clusters:
+                pred[start:stop] = model.predict(
+                    [x_trk[:len_slice], x_cls[:len_slice], x_jet[:len_slice]],
+                    batch_size=1024).ravel()
+            else:
+                pred[start:stop] = model.predict(
+                    [x_trk[:len_slice], x_jet[:len_slice]],
+                    batch_size=1024).ravel()
+
 
         with h5py.File(args.outfile, "w") as outf:
             outf["score"] = pred
@@ -139,6 +165,9 @@ if __name__ == "__main__":
     parser.add_argument("--chunksize", default=500000)
     parser.add_argument("--var-mod", default=None)
     parser.add_argument("-o", "--outfile", default="deco.h5")
+
+    parser.add_argument("--no-clusters", dest="do_clusters",
+                        action="store_false")
 
     args = parser.parse_args()
     main(args)
