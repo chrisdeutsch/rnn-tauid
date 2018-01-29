@@ -69,7 +69,7 @@ def main(args):
                              test_size=args.test_size)
     else:
         jet_train, jet_test, trk_train, trk_test = train_test_split(
-            [jet_data, trk_data, cls_data], test_size=args.test_size)
+            [jet_data, trk_data], test_size=args.test_size)
 
     # Apply preprocessing functions
     jet_preproc = preprocess(jet_train, jet_test, jet_preproc_func)
