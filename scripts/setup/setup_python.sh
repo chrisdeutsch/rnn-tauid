@@ -13,6 +13,9 @@ PIP_PKGS="root_numpy" # conda version is outdated
 
 echo "Setting up python environments"
 
+# Create env directory if it does not exist
+mkdir -p "${RNN_TAUID_ROOT}/env"
+
 # Setting up root
 if [ ! -z ${ATLAS_LOCAL_ROOT_BASE+x} ];then
     source ${ATLAS_LOCAL_ROOT_BASE}/user/atlasLocalSetup.sh --quiet
