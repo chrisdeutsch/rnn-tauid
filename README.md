@@ -41,7 +41,7 @@ lwtnn-split-keras-network.py model.h5
 # Create the network tuning (fill-lwtnn-varspec.py fills the variable
 # specification including variable names, variable scales/offsets and
 # input/output layer config)
-kerasfunc2json.py architecture.json weights.json | fill-lwtnn-varspec.py preproc.h5 | kerasfunc2json.py architecture.json weights.json /dev/stdin > nn.json
+kerasfunc2json.py architecture.json weights.h5 | fill-lwtnn-varspec.py preproc.h5 | kerasfunc2json.py architecture.json weights.h5 /dev/stdin > nn.json
 ```
 
 ## TODOs
