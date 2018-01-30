@@ -26,7 +26,21 @@ TODO: Explain workflow including external packages
 ## Convert trained model
 
 ```
+# Setup the environment
+source rnn-tauid/setup.sh
+
+# Creates required python environments (can be omitted if they already exist)
+setup_python.sh
+
+# Activates the python environment needed for the lwtnn converter
+source activate_lwtnn_env.sh
+
+# Splits the model.h5 into separate architecture and weight files
 lwtnn-split-keras-network.py model.h5
+
+# Create the network tuning (fill-lwtnn-varspec.py fills the variable
+# specification including variable names, variable scales/offsets and
+# input/output layer config)
 kerasfunc2json.py architecture.json weights.json | fill-lwtnn-varspec.py preproc.h5 | kerasfunc2json.py architecture.json weights.json /dev/stdin > nn.json
 ```
 
@@ -36,7 +50,5 @@ kerasfunc2json.py architecture.json weights.json | fill-lwtnn-varspec.py preproc
     - Create subpackage for plotting incl. a plot class for defining the plots
     - Partial dependence plots?
     - Always save raw data to recreate the plot (pickle?)
-- Port training implementation
 - Write an evaluator using lwtnn and eventloop (produce slim MxAOD output)
 - Write a one-shot script to do everything
-- Explain sample naming convention
