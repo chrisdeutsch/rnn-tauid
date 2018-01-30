@@ -43,11 +43,14 @@ if __name__ == "__main__":
     config = json.load(args.infile)
 
     with h5py.File(args.preproc, "r") as f:
+        do_clusters = "cls_preproc" in f
+
         jet_names, jet_offsets, jet_scales = get_preproc(f["jet_preproc"])
         trk_names, trk_offsets, trk_scales = get_preproc(f["trk_preproc"],
                                                          scalar=False)
-        cls_names, cls_offsets, cls_scales = get_preproc(f["cls_preproc"],
-                                                         scalar=False)
+        if do_clusters:
+            cls_names, cls_offsets, cls_scales = get_preproc(f["cls_preproc"],
+                                                             scalar=False)
 
     # Set output layer name
     outputs = config["outputs"]
@@ -76,7 +79,11 @@ if __name__ == "__main__":
 
 
     input_sequences = config["input_sequences"]
-    assert(len(input_sequences) == 2)
+
+    if do_clusters:
+        assert(len(input_sequences) == 2)
+    else:
+        assert(len(input_sequences) == 1)
 
     # Set Track input variables
     track = input_sequences[0]
@@ -90,14 +97,15 @@ if __name__ == "__main__":
         v["scale"] = float(s)
 
     # Set cluster input variables
-    cluster = input_sequences[1]
-    cluster_vars = cluster["variables"]
-    assert(len(cluster_vars) == len(cls_names))
+    if do_clusters:
+        cluster = input_sequences[1]
+        cluster_vars = cluster["variables"]
+        assert(len(cluster_vars) == len(cls_names))
 
-    cluster["name"] = "clusters"
-    for v, n, o, s in zip(cluster_vars, cls_names, cls_offsets, cls_scales):
-        v["name"] = n
-        v["offset"] = float(o)
-        v["scale"] = float(s)
+        cluster["name"] = "clusters"
+        for v, n, o, s in zip(cluster_vars, cls_names, cls_offsets, cls_scales):
+            v["name"] = n
+            v["offset"] = float(o)
+            v["scale"] = float(s)
 
     json.dump(config, args.outfile, indent=2)
