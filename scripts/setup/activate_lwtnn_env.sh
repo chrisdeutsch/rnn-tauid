@@ -10,3 +10,18 @@ else
     echo "Conda not found - aborting"
     return 1
 fi
+
+# Setup paths for lwtnn
+LWTNN_SCRIPTS_DIR="${RNN_TAUID_ROOT}/src/lwtnn/scripts"
+LWTNN_CONVERTERS_DIR="${RNN_TAUID_ROOT}/src/lwtnn/converters"
+
+if [ ! -d "${LWTNN_SCRIPTS_DIR}" ]; then
+    echo "Cannot find lwtnn scripts directory -- clone with --recursive"
+fi
+
+if [ ! -d "${LWTNN_CONVERTERS_DIR}" ]; then
+    echo "Cannot find lwtnn converters directory -- clone with --recursive"
+fi
+
+export PATH="${LWTNN_SCRIPTS_DIR}:${PATH}"
+export PATH="${LWTNN_CONVERTERS_DIR}:${PATH}"
