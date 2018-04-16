@@ -47,10 +47,12 @@ EL::StatusCode NtupleCreator::histInitialize()
     // beginning on each worker node, e.g. create histograms and output
     // trees.  This method gets called before any input files are
     // connected.
-    TFile *outputFile = wk()->getOutputFile(m_outputName);
+    // TFile *outputFile = wk()->getOutputFile(m_outputName);
 
+    TFile *outputFile = TFile::Open(m_outputName.c_str(), "RECREATE");
     m_tree = new TTree("tree", "flat tree");
     m_tree->SetDirectory(outputFile);
+    m_tree->SetMaxTreeSize(8000000000);
     m_tree->SetAutoSave(0);
 
     // Set output branches

@@ -8,6 +8,8 @@ def get_args():
     parser = argparse.ArgumentParser()
     parser.add_argument("directory")
     parser.add_argument("pattern")
+    parser.add_argument("-o", "--outfile", metavar="OUTFILE",
+                        default="NtupleCreator.root")
     parser.add_argument("-d", metavar="DIR", default="NtupleCreator")
     parser.add_argument("-n", metavar="NUM", type=int)
     parser.add_argument("--truth", action="store_true")
@@ -47,14 +49,9 @@ if __name__ == "__main__":
     if args.n:
         job.options().setDouble(ROOT.EL.Job.optMaxEvents, args.n)
 
-    output = ROOT.EL.OutputStream("ntuple")
-    job.outputAdd(output)
-    ntuple = ROOT.EL.NTupleSvc("ntuple")
-    job.algsAdd(ntuple)
-
     alg = ROOT.NtupleCreator()
     alg.SetName("NtupleCreator")
-    alg.m_outputName = "ntuple"
+    alg.m_outputName = args.outfile
     alg.m_deco_truth = args.truth
     alg.m_deco_rnnscore = args.rnnscore
 

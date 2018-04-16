@@ -36,7 +36,7 @@ public:
     float m_BDTJetScore; //!
 
     // RNN Score
-    float m_RNNJetScore;
+    float m_RNNJetScore; //!
 
     // Truth variables
     unsigned long m_truthProng; //!

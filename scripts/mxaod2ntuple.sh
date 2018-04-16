@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 set -e
 
-MXAOD_DIR="MxAOD_v12/"
-OUTDIR="ntuples_v12/"
+MXAOD_DIR="RnnTrack_TauID/"
+OUTDIR="ntuples_max/"
 FLAGS="--rnnscore"
 
 echo "Input MxAOD directory: $MXAOD_DIR"
@@ -17,36 +17,44 @@ else
 fi
 
 # JZ1W
-RunNtupleCreator.py $MXAOD_DIR "*JZ1W*" -d JZ1W $FLAGS
+mkdir JZ1W-ntuples
+RunNtupleCreator.py $MXAOD_DIR "*JZ1W*" -d JZ1W -o JZ1W-ntuples/JZ1W.root $FLAGS
 mv JZ1W/data-ntuple/*.root $OUTDIR/JZ1W.root
-rm -rf JZ1W/
+rm -rf JZ1W/ JZ1W-ntuples/
 
 # JZ2W
-RunNtupleCreator.py $MXAOD_DIR "*JZ2W*" -d JZ2W $FLAGS
+mkdir JZ2W-ntuples
+RunNtupleCreator.py $MXAOD_DIR "*JZ2W*" -d JZ2W -o JZ2W-ntuples/JZ2W.root $FLAGS
 mv JZ2W/data-ntuple/*.root $OUTDIR/JZ2W.root
-rm -rf JZ2W/
+rm -rf JZ2W/ JZ2W-ntuples/
 
 # JZ3W
-RunNtupleCreator.py $MXAOD_DIR "*JZ3W*" -d JZ3W $FLAGS
+mkdir JZ3W-ntuples
+RunNtupleCreator.py $MXAOD_DIR "*JZ3W*" -d JZ3W -o JZ3W-ntuples/JZ3W.root $FLAGS
 mv JZ3W/data-ntuple/*.root $OUTDIR/JZ3W.root
-rm -rf JZ3W/
+rm -rf JZ3W/ JZ3W-ntuples/
 
 # JZ4W
-RunNtupleCreator.py $MXAOD_DIR "*JZ4W*" -d JZ4W $FLAGS
-mv JZ4W/data-ntuple/*.root $OUTDIR/JZ4W.root
-rm -rf JZ4W/
+mkdir JZ4W-ntuples
+RunNtupleCreator.py $MXAOD_DIR "*JZ4W*" -d JZ4W -o JZ4W-ntuples/JZ4W.root $FLAGS
+mv JZ4W-ntuples/*.root $OUTDIR/
+rm -rf JZ4W/ JZ4W-ntuples/
 
 # JZ5W
-RunNtupleCreator.py $MXAOD_DIR "*JZ5W*" -d JZ5W $FLAGS
-mv JZ5W/data-ntuple/*.root $OUTDIR/JZ5W.root
-rm -rf JZ5W/
+mkdir JZ5W-ntuples
+RunNtupleCreator.py $MXAOD_DIR "*JZ5W*" -d JZ5W -o JZ5W-ntuples/JZ5W.root $FLAGS
+mv JZ5W-ntuples/*.root $OUTDIR/
+rm -rf JZ5W/ JZ5W-ntuples/
 
 # JZ6W
-RunNtupleCreator.py $MXAOD_DIR "*JZ6W*" -d JZ6W $FLAGS
-mv JZ6W/data-ntuple/*.root $OUTDIR/JZ6W.root
-rm -rf JZ6W/
+mkdir JZ6W-ntuples
+RunNtupleCreator.py $MXAOD_DIR "*JZ6W*" -d JZ6W -o JZ6W-ntuples/JZ6W.root $FLAGS
+mv JZ6W-ntuples/*.root $OUTDIR/
+rm -rf JZ6W/ JZ6W-ntuples/
 
 # Gammatautau
-RunNtupleCreator.py $MXAOD_DIR "*Gammatautau*" -d Gammatautau --truth $FLAGS
-mv Gammatautau/data-ntuple/*.root $OUTDIR/Gammatautau.root
-rm -rf Gammatautau/
+mkdir Gammatautau-ntuples
+RunNtupleCreator.py $MXAOD_DIR "*Gammatautau*" -d Gammatautau \
+                    -o Gammatautau-ntuples/Gammatautau.root --truth $FLAGS
+mv Gammatautau-ntuples/*.root $OUTDIR/
+rm -rf Gammatautau/ Gammatautau-ntuples
