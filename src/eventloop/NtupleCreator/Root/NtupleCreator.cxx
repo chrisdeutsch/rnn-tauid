@@ -291,5 +291,8 @@ EL::StatusCode NtupleCreator::histFinalize()
     // outputs have been merged.  This is different from finalize() in
     // that it gets called on all worker nodes regardless of whether
     // they processed input events.
+    auto file = m_tree->GetCurrentFile();
+    file->Write();
+    file->Close();
     return EL::StatusCode::SUCCESS;
 }

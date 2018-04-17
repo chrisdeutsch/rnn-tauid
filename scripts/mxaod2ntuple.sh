@@ -19,19 +19,19 @@ fi
 # JZ1W
 mkdir JZ1W-ntuples
 RunNtupleCreator.py $MXAOD_DIR "*JZ1W*" -d JZ1W -o JZ1W-ntuples/JZ1W.root $FLAGS
-mv JZ1W/data-ntuple/*.root $OUTDIR/JZ1W.root
+mv JZ1W-ntuples/*.root $OUTDIR/
 rm -rf JZ1W/ JZ1W-ntuples/
 
 # JZ2W
 mkdir JZ2W-ntuples
 RunNtupleCreator.py $MXAOD_DIR "*JZ2W*" -d JZ2W -o JZ2W-ntuples/JZ2W.root $FLAGS
-mv JZ2W/data-ntuple/*.root $OUTDIR/JZ2W.root
+mv JZ2W-ntuples/*.root $OUTDIR/
 rm -rf JZ2W/ JZ2W-ntuples/
 
 # JZ3W
 mkdir JZ3W-ntuples
 RunNtupleCreator.py $MXAOD_DIR "*JZ3W*" -d JZ3W -o JZ3W-ntuples/JZ3W.root $FLAGS
-mv JZ3W/data-ntuple/*.root $OUTDIR/JZ3W.root
+mv JZ3W-ntuples/*.root $OUTDIR/
 rm -rf JZ3W/ JZ3W-ntuples/
 
 # JZ4W
