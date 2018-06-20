@@ -13,7 +13,7 @@ compilation:
   before_script:
     - source /home/atlas/release_setup.sh
   script:
-    - pip install mkdocs
+    - pip install --user mkdocs
     - mkdocs build
   artifacts:
     paths:
