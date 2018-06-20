@@ -1,0 +1,17 @@
+site_name: rnn-tauid
+
+repo_name: GitLab
+repo_url: https://gitlab.cern.ch/cdeutsch/rnn-tauid
+edit_uri: tree/master/doc/
+
+theme: readthedocs
+
+pages:
+  - Home: 'index.md'
+  - Quick Start: 'quick-start.md'
+  - Tau Identification: 'tauid-workflow.md'
+  - Decay Mode Classification: 'decaymode-workflow.md'
+  - About: 'about.md'
+
+plugins:
+  - search
