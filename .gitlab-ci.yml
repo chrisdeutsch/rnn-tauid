@@ -12,7 +12,9 @@ compilation:
   variables:
     ATLAS_LOCAL_ROOT_BASE: /cvmfs/atlas.cern.ch/repo/ATLASLocalRootBase
   script:
+    - shopt -s expand_aliases
     - alias setupATLAS="source ${ATLAS_LOCAL_ROOT_BASE}/user/atlasLocalSetup.sh"
+    - set +e
     - setupATLAS
     - lsetup "lcgenv -p LCG_93 x86_64-slc6-gcc62-opt Python"
     - pip install mkdocs
