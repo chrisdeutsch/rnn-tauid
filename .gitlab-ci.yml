@@ -1,0 +1,27 @@
+stages:
+  - compile
+  - deploy
+
+# Compile documentation
+compilation:
+  stage: compile
+  only:
+    - master
+  script:
+    - pip install mkdocs
+    - mkdocs build
+  artifacts:
+    paths:
+      - site/
+    expire_in: 1 hour
+
+# Deploy to EOS
+deployment:
+  stage: deploy
+  only:
+    - master
+  image: gitlab-registry.cern.ch/ci-tools/ci-web-deployer:latest
+  script:
+    - deploy-eos
+  before_script: []
+  after_script: []
