@@ -13,8 +13,9 @@ compilation:
   before_script:
     - source /home/atlas/release_setup.sh
   script:
+    - pwd
     - pip install --user mkdocs
-    - mkdocs build
+    - $HOME/.local/bin/mkdocs build
   artifacts:
     paths:
       - site/
