@@ -8,7 +8,7 @@ compilation:
   only:
     - master
   script:
-    - pip install mkdocs
+    - pip3 install mkdocs
     - mkdocs build
   artifacts:
     paths:
