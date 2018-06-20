@@ -26,6 +26,8 @@ deployment:
   stage: deploy
   only:
     - master
+  variables:
+    CI_OUTPUT_DIR: site
   image: gitlab-registry.cern.ch/ci-tools/ci-web-deployer:latest
   script:
     - deploy-eos
