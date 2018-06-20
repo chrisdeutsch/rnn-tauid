@@ -7,11 +7,11 @@ compilation:
   stage: compile
   only:
     - master
-  image: gitlab-registry.cern.ch/ci-tools/ci-web-deployer:latest
+  image: atlas/analysisbase:21.2.30
   tags:
     - cvmfs
-  variables:
-    ATLAS_LOCAL_ROOT_BASE: /cvmfs/atlas.cern.ch/repo/ATLASLocalRootBase
+  before_script:
+    - source /home/atlas/release_setup.sh
   script:
     - pip install mkdocs
     - mkdocs build
