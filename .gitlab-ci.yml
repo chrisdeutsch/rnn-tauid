@@ -7,8 +7,15 @@ compilation:
   stage: compile
   only:
     - master
+  tags:
+    - cvmfs
+  variables:
+    ATLAS_LOCAL_ROOT_BASE: /cvmfs/atlas.cern.ch/repo/ATLASLocalRootBase
   script:
-    - pip3 install mkdocs
+    - alias setupATLAS="source ${ATLAS_LOCAL_ROOT_BASE}/user/atlasLocalSetup.sh"
+    - setupATLAS
+    - lsetup "lcgenv -p LCG_93 x86_64-slc6-gcc62-opt Python"
+    - pip install mkdocs
     - mkdocs build
   artifacts:
     paths:
