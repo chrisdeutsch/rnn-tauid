@@ -2,7 +2,7 @@ site_name: rnn-tauid
 
 repo_name: GitLab
 repo_url: https://gitlab.cern.ch/cdeutsch/rnn-tauid
-edit_uri: tree/master/doc/
+edit_uri: tree/master/docs/
 
 theme: readthedocs
 
