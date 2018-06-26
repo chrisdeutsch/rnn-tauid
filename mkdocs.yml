@@ -10,7 +10,7 @@ pages:
   - Home: 'index.md'
   - Quick Start: 'quick-start.md'
   - Tau Identification: 'tauid-workflow.md'
-  - Decay Mode Classification: 'decaymode-workflow.md'
+  - Tau Decay Mode Classification: 'decaymode-workflow.md'
   - About: 'about.md'
 
 plugins:

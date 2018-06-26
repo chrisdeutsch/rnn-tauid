@@ -2,6 +2,8 @@
 
 You can find the code on [Gitlab](https://gitlab.cern.ch/cdeutsch/rnn-tauid).
 
+TODO: Comment on the use of different environments
+
 ## Installation
 
 # RNN-TauID
