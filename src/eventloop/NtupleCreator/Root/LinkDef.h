@@ -9,5 +9,6 @@
 
 // Declare the class(es) to generate dictionaries for:
 #pragma link C++ class NtupleCreator+;
+#pragma link C++ class NtupleCreator_DecayModeClf+;
 
 #endif // NTUPLECREATOR_LINKDEF_H
