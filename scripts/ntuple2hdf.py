@@ -93,7 +93,7 @@ def load_sequence(branches, mask_branch, max_len, sel, outf, args):
         args.infiles, treename=args.treename,
         branches=(mask_branch, default_value, max_len),
         selection=sel)
-    mask = mask <= 0
+    mask = (mask == 0)
 
     for br in tqdm(branches, disable=args.quiet):
         data = root2array(args.infiles, treename=args.treename,
