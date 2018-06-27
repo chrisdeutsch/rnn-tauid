@@ -57,6 +57,7 @@ EL::StatusCode NtupleCreator::histInitialize()
 
     // Set output branches
     m_tree->Branch("TauJets.mcEventNumber", &m_mcEventNumber);
+    m_tree->Branch("TauJets.mcEventWeight", &m_mcEventWeight);
     m_tree->Branch("TauJets.nTracks", &m_nTracks);
     m_tree->Branch("TauJets.pt", &m_pt);
     m_tree->Branch("TauJets.eta", &m_eta);
@@ -174,6 +175,7 @@ EL::StatusCode NtupleCreator::execute()
     const xAOD::EventInfo *eventInfo = nullptr;
     ANA_CHECK(evtStore()->retrieve(eventInfo, "EventInfo"));
     m_mcEventNumber = eventInfo->mcEventNumber();
+    m_mcEventWeight = eventInfo->mcEventWeight();
 
     const xAOD::TauJetContainer *taus = nullptr;
     ANA_CHECK(evtStore()->retrieve(taus, "TauJets"));
