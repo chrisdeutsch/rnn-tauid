@@ -61,6 +61,15 @@ def main(args):
         conv_data = load_data_decaymodeclf(sig, np.s_[:sig_idx], conv_vars,
                                            args.num_conv)
 
+    # Apply neutral pt cut
+    if args.neut_pt_cut:
+        log.info("Applying neutral pfo pt cut: pt > {} GeV".format(args.neut_pt_cut))
+        pt_col = neut_varnames.index("NeutralPFO/pt_log")
+        neut_pfo_pt = neut_data.x[..., pt_col]
+        pt_fail = neut_pfo_pt < np.log10(1e3 * args.neut_pt_cut)
+        neut_data.x[pt_fail] = np.nan
+        del neut_pfo_pt, pt_fail
+
     # Validation split
     log.info("Performing train-validation split ...")
     chrg_train, chrg_test, neut_train, neut_test, shot_train, shot_test, conv_train, conv_test = \
@@ -163,7 +172,7 @@ if __name__ == "__main__":
     parser.add_argument("--num-shot", type=int, default=6)
     parser.add_argument("--num-conv", type=int, default=4)
 
-    #assert False, "Neutral PFO THRESHOLD???"
+    parser.add_argument("--neut-pt-cut", type=float, default=1.5)
 
     arch = parser.add_argument_group("architecture")
     arch.add_argument("--dense-units-1-1", type=int, default=32)
