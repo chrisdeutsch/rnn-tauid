@@ -45,9 +45,13 @@ RunNtupleCreator.py --decaymodeclf --truth \
 
 ## Converting to HDF5 for Training
 
-In a clean shell
+After creating flat ntuples from the MxAOD they have to be further converted
+into HDF5 format for convenient processing in python. This step requires ROOT
+and root_numpy to read the ntuples. As a result a CVMFS-enabled machine is
+required for this step. Alternatively you can use your own python setup as long
+as all requirements are fulfilled.
 
-This step requires a cvmfs-enabled machine.
+To convert the ntuples execute the following in a clean shell:
 
 ```bash
 # Set up environment variables
@@ -64,9 +68,27 @@ SEL="(TauJets.truthDecayMode < 5) && (TauJets.pt < 100000) && (TauJets.truthPtVi
 TRAIN_SEL="(TauJets.mcEventNumber % 2 == 0) && ${SEL}"
 TEST_SEL="(TauJets.mcEventNumber % 2 == 1) && ${SEL}"
 
+# A running index is given by '%d' to split files
 ntuple2hdf.py gammatautau_train_%d.h5 truthXp ${NTUPLE_DIR}/Gammatautau*.root \
     --decaymodeclf --treename tree --sel "${TRAIN_SEL}"
 
 ntuple2hdf.py gammatautau_test_%d.h5 truthXp ${NTUPLE_DIR}/Gammatautau*.root \
     --decaymodeclf --treename tree --sel "${TEST_SEL}"
 ```
+
+This applies a basic tau selection for decay mode classification and splits the
+dataset into a training and testing part according to the `mcEventNumber`.
+
+## Model Training
+
+The model training can be performed in a standalone python environment (no CVMFS
+required). Training the default setup can be done with:
+
+```bash
+train_decaymodeclf.py gammatautau_train_%d.h5
+```
+
+The training process generates two output files `model.h5` and `preproc.h5`
+containing the model weights / architecture and the preprocessing rules for the
+input variables. These two files fully define the network and can be used for
+evaluation at a later stage.
