@@ -3,6 +3,7 @@ import imp
 import numpy as np
 from collections import namedtuple
 from rnn_tauid.preprocessing import pt_reweight
+from sklearn.preprocessing import OneHotEncoder
 
 
 Data = namedtuple("Data", ["x", "y", "w"])
@@ -53,6 +54,39 @@ def load_data(sig, bkg, sig_slice, bkg_slice, invars, num=None):
             bkg[varname].read_direct(x, source_sel=bkg_src, dest_sel=bkg_dest)
 
     return Data(x=x, y=y, w=w)
+
+
+def load_data_decaymodeclf(sig, sig_slice, invars, num=None):
+    sig_pt = sig["TauJets/pt"][sig_slice]
+    sig_len = len(sig_pt)
+    sig_weight = np.ones_like(sig_pt) # TODO: retrieve EventWeight instead
+    w = sig_weight
+
+    # Class labels (OneHotEncoded truth decay mode)
+    y = sig["TauJets/truthDecayMode"][sig_slice].reshape((-1, 1))
+    enc = OneHotEncoder(sparse=False)
+    y = enc.fit_transform(y)
+
+    # Load variables
+    n_vars = len(invars)
+
+    # If number of timesteps given
+    if num:
+        x = np.empty((sig_len, num, n_vars))
+        sig_src = np.s_[sig_slice, :num]
+    else:
+        x = np.empty((sig_len, n_vars))
+        sig_src = np.s_[sig_slice]
+    for i, (varname, func, _) in enumerate(invars):
+        sig_dest = np.s_[:sig_len, ..., i]
+
+        if func:
+            func(sig, x, source_sel=sig_src, dest_sel=sig_dest)
+        else:
+            sig[varname].read_direct(x, source_sel=sig_src, dest_sel=sig_dest)
+
+    return Data(x=x, y=y, w=w)
+
 
 
 def parallel_shuffle(sequences):
@@ -122,3 +156,37 @@ def load_vars(var_module=None, tag=None):
         from rnn_tauid.variables import cluster_vars as cls_vars
 
     return jet_vars, trk_vars, cls_vars
+
+
+def load_vars_decaymodeclf(var_module=None, tag=None):
+    chrg_pfo_vars = None
+    neut_pfo_vars = None
+    shot_pfo_vars = None
+    conv_vars = None
+
+    # Load variables from module
+    if var_module:
+        mod = imp.load_source("var_module", var_module)
+        if hasattr(mod, "chrg_pfo_vars"):
+            chrg_pfo_vars = mod.chrg_pfo_vars
+        if hasattr(mod, "neut_pfo_vars"):
+            neut_pfo_vars = mod.neut_pfo_vars
+        if hasattr(mod, "shot_pfo_vars"):
+            shot_pfo_vars = mod.shot_pfo_vars
+        if hasattr(mod, "conv_vars"):
+            conv_vars = mod.conv_vars
+
+    # If still 'None' load defaults
+    if chrg_pfo_vars is None:
+        from rnn_tauid.variables import charged_pfo_vars as chrg_pfo_vars
+
+    if neut_pfo_vars is None:
+        from rnn_tauid.variables import neutral_pfo_vars as neut_pfo_vars
+
+    if shot_pfo_vars is None:
+        from rnn_tauid.variables import shot_vars as shot_pfo_vars
+
+    if conv_vars is None:
+        from rnn_tauid.variables import conversion_vars as conv_vars
+
+    return chrg_pfo_vars, neut_pfo_vars, shot_pfo_vars, conv_vars

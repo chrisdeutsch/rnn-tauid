@@ -18,15 +18,11 @@ NtupleCreator_DecayModeClf::NtupleCreator_DecayModeClf()
 {
 }
 
-
-
 EL::StatusCode NtupleCreator_DecayModeClf::setupJob(EL::Job& job)
 {
     job.useXAOD();
     return EL::StatusCode::SUCCESS;
 }
-
-
 
 EL::StatusCode NtupleCreator_DecayModeClf::histInitialize()
 {
@@ -38,6 +34,7 @@ EL::StatusCode NtupleCreator_DecayModeClf::histInitialize()
 
     // Set output branches
     m_tree->Branch("TauJets.mcEventNumber", &m_mcEventNumber);
+    m_tree->Branch("TauJets.mcEventWeight", &m_mcEventWeight);
     m_tree->Branch("TauJets.nTracks", &m_nTracks);
     m_tree->Branch("TauJets.pt", &m_pt);
     m_tree->Branch("TauJets.eta", &m_eta);
@@ -129,6 +126,7 @@ EL::StatusCode NtupleCreator_DecayModeClf::execute()
     const xAOD::EventInfo *eventInfo = nullptr;
     ANA_CHECK(evtStore()->retrieve(eventInfo, "EventInfo"));
     m_mcEventNumber = eventInfo->mcEventNumber();
+    m_mcEventWeight = eventInfo->mcEventWeight();
 
     const xAOD::TauJetContainer *taus = nullptr;
     ANA_CHECK(evtStore()->retrieve(taus, "TauJets"));
@@ -205,21 +203,15 @@ EL::StatusCode NtupleCreator_DecayModeClf::execute()
     return EL::StatusCode::SUCCESS;
 }
 
-
-
 EL::StatusCode NtupleCreator_DecayModeClf::postExecute()
 {
     return EL::StatusCode::SUCCESS;
 }
 
-
-
 EL::StatusCode NtupleCreator_DecayModeClf::finalize()
 {
     return EL::StatusCode::SUCCESS;
 }
-
-
 
 EL::StatusCode NtupleCreator_DecayModeClf::histFinalize()
 {

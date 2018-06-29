@@ -18,6 +18,7 @@ public:
 
     // Variables in the output tree
     unsigned long long m_mcEventNumber; //!
+    float m_mcEventWeight; //!
     int m_nTracks; //!
     float m_pt; //!
     float m_eta; //!
