@@ -92,3 +92,42 @@ The training process generates two output files `model.h5` and `preproc.h5`
 containing the model weights / architecture and the preprocessing rules for the
 input variables. These two files fully define the network and can be used for
 evaluation at a later stage.
+
+
+## Model Evaluation
+
+Assuming you have trained a model and saved the network and preprocessing as
+`model.h5` and `preproc.h5` the next step is evaluating the algorithm on
+validation or testing data. This can be done with a single command (assuming the
+python environment is set up):
+
+```bash
+# Evaluate on training data
+decorate_decaymodeclf.py ${MODEL_DIR}/preproc.h5 ${MODEL_DIR}/model.h5 \
+    ${DATA_DIR}/gammatautau_train_%d.h5 -o deco_train.h5
+
+# Evaluate on testing data
+decorate_decaymodeclf.py ${MODEL_DIR}/preproc.h5 ${MODEL_DIR}/model.h5 \
+    ${DATA_DIR}/gammatautau_test_%d.h5 -o deco_test.h5
+```
+
+This will create an output datafile containing the five decay mode probabilities
+returned by the classifier.
+
+After this is done the key performance metrics can be computed. An example is
+the migration matrix between decay modes. A plotting script is available and can
+be used by calling:
+
+```bash
+# Migration matrix (columns are normalized):
+plot_migration_matrix.py ${DATA_DIR}/gammatautau_test_%d.h5 deco_test.h5 mig_mat.pdf
+
+# Composition matrix (rows are normalized):
+plot_migration_matrix.py ${DATA_DIR}/gammatautau_test_%d.h5 deco_test.h5 comp_mat.pdf \
+    --composition
+```
+
+An exemplary migration matrix is shown in the following:
+![Migration Matrix](img/migration_matrix_workflow.png)
+
+## Converting the Model for tauRecTools
