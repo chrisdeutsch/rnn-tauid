@@ -113,12 +113,24 @@ def main(args):
     shot_shape = shot_train.x.shape[1:]
     conv_shape = conv_train.x.shape[1:]
 
-    model = decaymodeclf_model(5, chrg_shape, neut_shape, shot_shape, conv_shape)
+    model = decaymodeclf_model(
+        5, chrg_shape, neut_shape, shot_shape, conv_shape,
+        dense_units_1=args.dense_units_1,
+        lstm_units_1=args.lstm_units_1,
+        dense_units_2=args.dense_units_2,
+        lstm_units_2=args.lstm_units_2,
+        dense_units_3=args.dense_units_3,
+        lstm_units_3=args.lstm_units_3,
+        dense_units_4=args.dense_units_4,
+        lstm_units_4=args.lstm_units_4,
+        final_dense_units_1=args.final_dense_units_1,
+        final_dense_units_2=args.final_dense_units_2,
+        backwards=True)
     model.summary(print_fn=log.info)
 
     opt = SGD(lr=0.01, momentum=0.9, nesterov=True)
-    model.compile(loss="binary_crossentropy", optimizer=opt,
-              metrics=["accuracy"])
+    model.compile(loss="categorical_crossentropy", optimizer="adam",
+                  metrics=["categorical_accuracy"])
 
     # Configure callbacks
     callbacks = []
@@ -135,8 +147,8 @@ def main(args):
         csv_logger = CSVLogger(args.csv_log)
         callbacks.append(csv_logger)
 
-    reduce_lr = ReduceLROnPlateau(patience=4, verbose=1, min_lr=1e-4)
-    callbacks.append(reduce_lr)
+    #reduce_lr = ReduceLROnPlateau(patience=4, verbose=1, min_lr=1e-4)
+    #callbacks.append(reduce_lr)
 
     # Start training
     hist = model.fit(
@@ -175,25 +187,16 @@ if __name__ == "__main__":
     parser.add_argument("--neut-pt-cut", type=float, default=1.5)
 
     arch = parser.add_argument_group("architecture")
-    arch.add_argument("--dense-units-1-1", type=int, default=32)
-    arch.add_argument("--dense-units-1-2", type=int, default=32)
-
-    arch.add_argument("--lstm-units-1-1", type=int, default=32)
-    arch.add_argument("--lstm-units-1-2", type=int, default=32)
-
-    arch.add_argument("--dense-units-2-1", type=int, default=32)
-    arch.add_argument("--dense-units-2-2", type=int, default=32)
-
-    arch.add_argument("--lstm-units-2-1", type=int, default=24)
-    arch.add_argument("--lstm-units-2-2", type=int, default=24)
-
-
-    arch.add_argument("--dense-units-3-1", type=int, default=128)
-    arch.add_argument("--dense-units-3-2", type=int, default=128)
-    arch.add_argument("--dense-units-3-3", type=int, default= 16)
-
-    arch.add_argument("--merge-dense-units-1", type=int, default=64)
-    arch.add_argument("--merge-dense-units-2", type=int, default=32)
+    parser.add_argument("--dense-units-1", type=int, default=24)
+    parser.add_argument("--dense-units-2", type=int, default=24)
+    parser.add_argument("--dense-units-3", type=int, default=16)
+    parser.add_argument("--dense-units-4", type=int, default=16)
+    parser.add_argument("--lstm-units-1", type=int, default=24)
+    parser.add_argument("--lstm-units-2", type=int, default=24)
+    parser.add_argument("--lstm-units-3", type=int, default=16)
+    parser.add_argument("--lstm-units-4", type=int, default=16)
+    parser.add_argument("--final-dense-units-1", type=int, default=64)
+    parser.add_argument("--final-dense-units-2", type=int, default=32)
 
     args = parser.parse_args()
     main(args)
