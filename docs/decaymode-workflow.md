@@ -131,3 +131,20 @@ An exemplary migration matrix is shown in the following:
 ![Migration Matrix](img/migration_matrix_workflow.png)
 
 ## Converting the Model for tauRecTools
+
+In a clean shell (need lwtnn environment based on python3)
+
+```bash
+source rnn-tauid/setup.sh
+
+# 
+source activate_lwtnn_env.sh
+
+# Split the model file returned by training into architecture.json and weights.h5
+lwtnn-split-keras-network.py model.h5
+
+# Fill the lwtnn variable specification
+kerasfunc2json.py architecture.json weights.h5 \
+   | fill-lwtnn-varspec-decaymodeclf.py preproc.h5 \
+   | kerasfunc2json.py architecture.json weights.h5 /dev/stdin > nn.json
+```
