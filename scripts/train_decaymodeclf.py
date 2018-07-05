@@ -150,6 +150,8 @@ def main(args):
     #reduce_lr = ReduceLROnPlateau(patience=4, verbose=1, min_lr=1e-4)
     #callbacks.append(reduce_lr)
 
+    import pdb; pdb.set_trace()
+
     # Start training
     hist = model.fit(
         [chrg_train.x, neut_train.x, shot_train.x, conv_train.x],

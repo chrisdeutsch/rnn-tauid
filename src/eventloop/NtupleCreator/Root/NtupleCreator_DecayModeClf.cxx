@@ -64,41 +64,47 @@ EL::StatusCode NtupleCreator_DecayModeClf::histInitialize()
     m_tree->Branch("TauJets.jet_Eta", &m_jet_Eta);
 
     // Charged PFO variables
-    m_tree->Branch("ChargedPFO.pt", &m_pfo_chargedPt);
     m_tree->Branch("ChargedPFO.phi", &m_pfo_chargedPhi);
+    m_tree->Branch("ChargedPFO.dphi", &m_pfo_chargedDPhi);
     m_tree->Branch("ChargedPFO.eta", &m_pfo_chargedEta);
+    m_tree->Branch("ChargedPFO.deta", &m_pfo_chargedDEta);
+    m_tree->Branch("ChargedPFO.pt", &m_pfo_chargedPt);
+    m_tree->Branch("ChargedPFO.jetpt", &m_pfo_chargedJetPt);
 
     // Neutral PFO variables
-    m_tree->Branch("NeutralPFO.pt", &m_pfo_neutralPt);
     m_tree->Branch("NeutralPFO.phi", &m_pfo_neutralPhi);
+    m_tree->Branch("NeutralPFO.dphi", &m_pfo_neutralDPhi);
     m_tree->Branch("NeutralPFO.eta", &m_pfo_neutralEta);
+    m_tree->Branch("NeutralPFO.deta", &m_pfo_neutralDEta);
+    m_tree->Branch("NeutralPFO.pt", &m_pfo_neutralPt);
+    m_tree->Branch("NeutralPFO.jetpt", &m_pfo_neutralJetPt);
+
     m_tree->Branch("NeutralPFO.pi0BDT", &m_pfo_neutralPi0BDT);
-    m_tree->Branch("NeutralPFO.ptSub", &m_pfo_neutralPtSub);
+    m_tree->Branch("NeutralPFO.ptSubRatio", &m_pfo_neutralPtSubRatio);
+
     m_tree->Branch("NeutralPFO.nHitsInEM1", &m_pfo_neutralNHitsInEM1);
     m_tree->Branch("NeutralPFO.SECOND_R", &m_pfo_neutral_SECOND_R);
-    m_tree->Branch("NeutralPFO.SECOND_LAMBDA", &m_pfo_neutral_SECOND_LAMBDA);
-    m_tree->Branch("NeutralPFO.CENTER_LAMBDA", &m_pfo_neutral_CENTER_LAMBDA);
-    m_tree->Branch("NeutralPFO.ENG_FRAC_MAX", &m_pfo_neutral_ENG_FRAC_MAX);
     m_tree->Branch("NeutralPFO.ENG_FRAC_CORE", &m_pfo_neutral_ENG_FRAC_CORE);
-    m_tree->Branch("NeutralPFO.SECOND_ENG_DENS", &m_pfo_neutral_SECOND_ENG_DENS);
     m_tree->Branch("NeutralPFO.nPosECells_EM1", &m_pfo_neutral_NPosECells_EM1);
-    m_tree->Branch("NeutralPFO.nPosECells_EM2", &m_pfo_neutral_NPosECells_EM2);
     m_tree->Branch("NeutralPFO.secondEtaWRTClusterPosition_EM1",
                    &m_pfo_neutral_secondEtaWRTClusterPosition_EM1);
-    m_tree->Branch("NeutralPFO.secondEtaWRTClusterPosition_EM2",
-                   &m_pfo_neutral_secondEtaWRTClusterPosition_EM2);
-    m_tree->Branch("NeutralPFO.energyfrac_EM1", &m_pfo_neutral_energyfrac_EM1);
     m_tree->Branch("NeutralPFO.energyfrac_EM2", &m_pfo_neutral_energyfrac_EM2);
 
     // Shot PFO variables
-    m_tree->Branch("ShotPFO.pt", &m_pfo_shotPt);
     m_tree->Branch("ShotPFO.phi", &m_pfo_shotPhi);
+    m_tree->Branch("ShotPFO.dphi", &m_pfo_shotDPhi);
     m_tree->Branch("ShotPFO.eta", &m_pfo_shotEta);
+    m_tree->Branch("ShotPFO.deta", &m_pfo_shotDEta);
+    m_tree->Branch("ShotPFO.pt", &m_pfo_shotPt);
+    m_tree->Branch("ShotPFO.jetpt", &m_pfo_shotJetPt);
 
     // Conversion track variables
-    m_tree->Branch("ConvTrack.pt", &m_conv_pt);
     m_tree->Branch("ConvTrack.phi", &m_conv_phi);
+    m_tree->Branch("ConvTrack.dphi", &m_conv_dphi);
     m_tree->Branch("ConvTrack.eta", &m_conv_eta);
+    m_tree->Branch("ConvTrack.deta", &m_conv_deta);
+    m_tree->Branch("ConvTrack.pt", &m_conv_pt);
+    m_tree->Branch("ConvTrack.jetpt", &m_conv_jetpt);
 
     return EL::StatusCode::SUCCESS;
 }
@@ -160,41 +166,47 @@ EL::StatusCode NtupleCreator_DecayModeClf::execute()
         m_jet_Eta = tau->auxdata<float>("jet_Eta");
 
         // Charged PFO variables
-        m_pfo_chargedPt = tau->auxdata<vfloat>("pfo_chargedPt");
         m_pfo_chargedPhi = tau->auxdata<vfloat>("pfo_chargedPhi");
+        m_pfo_chargedDPhi = tau->auxdata<vfloat>("pfo_chargedDPhi");
         m_pfo_chargedEta = tau->auxdata<vfloat>("pfo_chargedEta");
+        m_pfo_chargedDEta = tau->auxdata<vfloat>("pfo_chargedDEta");
+        m_pfo_chargedPt = tau->auxdata<vfloat>("pfo_chargedPt");
+        m_pfo_chargedJetPt = tau->auxdata<vfloat>("pfo_chargedJetPt");
 
         // Neutral PFO variables
-        m_pfo_neutralPt = tau->auxdata<vfloat>("pfo_neutralPt");
         m_pfo_neutralPhi = tau->auxdata<vfloat>("pfo_neutralPhi");
+        m_pfo_neutralDPhi = tau->auxdata<vfloat>("pfo_neutralDPhi");
         m_pfo_neutralEta = tau->auxdata<vfloat>("pfo_neutralEta");
+        m_pfo_neutralDEta = tau->auxdata<vfloat>("pfo_neutralDEta");
+        m_pfo_neutralPt = tau->auxdata<vfloat>("pfo_neutralPt");
+        m_pfo_neutralJetPt = tau->auxdata<vfloat>("pfo_neutralJetPt");
+
         m_pfo_neutralPi0BDT = tau->auxdata<vfloat>("pfo_neutralPi0BDT");
-        m_pfo_neutralPtSub = tau->auxdata<vfloat>("pfo_neutralPtSub");
-        m_pfo_neutralNHitsInEM1 = tau->auxdata<vuint8>("pfo_neutralNHitsInEM1");
+        m_pfo_neutralPtSubRatio = tau->auxdata<vfloat>("pfo_neutralPtSubRatio");
+
+        m_pfo_neutralNHitsInEM1 = tau->auxdata<vfloat>("pfo_neutralNHitsInEM1");
         m_pfo_neutral_SECOND_R = tau->auxdata<vfloat>("pfo_neutral_SECOND_R");
-        m_pfo_neutral_SECOND_LAMBDA = tau->auxdata<vfloat>("pfo_neutral_SECOND_LAMBDA");
-        m_pfo_neutral_CENTER_LAMBDA = tau->auxdata<vfloat>("pfo_neutral_CENTER_LAMBDA");
-        m_pfo_neutral_ENG_FRAC_MAX = tau->auxdata<vfloat>("pfo_neutral_ENG_FRAC_MAX");
         m_pfo_neutral_ENG_FRAC_CORE = tau->auxdata<vfloat>("pfo_neutral_ENG_FRAC_CORE");
-        m_pfo_neutral_SECOND_ENG_DENS = tau->auxdata<vfloat>("pfo_neutral_SECOND_ENG_DENS");
-        m_pfo_neutral_NPosECells_EM1 = tau->auxdata<vint>("pfo_neutral_NPosECells_EM1");
-        m_pfo_neutral_NPosECells_EM2 = tau->auxdata<vint>("pfo_neutral_NPosECells_EM2");
+        m_pfo_neutral_NPosECells_EM1 = tau->auxdata<vfloat>("pfo_neutral_NPosECells_EM1");
         m_pfo_neutral_secondEtaWRTClusterPosition_EM1 =
           tau->auxdata<vfloat>("pfo_neutral_secondEtaWRTClusterPosition_EM1");
-        m_pfo_neutral_secondEtaWRTClusterPosition_EM2 =
-          tau->auxdata<vfloat>("pfo_neutral_secondEtaWRTClusterPosition_EM2");
-        m_pfo_neutral_energyfrac_EM1 = tau->auxdata<vfloat>("pfo_neutral_energyfrac_EM1");
         m_pfo_neutral_energyfrac_EM2 = tau->auxdata<vfloat>("pfo_neutral_energyfrac_EM2");
 
         // Shot PFO variables
-        m_pfo_shotPt = tau->auxdata<vfloat>("pfo_shotPt");
         m_pfo_shotPhi = tau->auxdata<vfloat>("pfo_shotPhi");
+        m_pfo_shotDPhi = tau->auxdata<vfloat>("pfo_shotDPhi");
         m_pfo_shotEta = tau->auxdata<vfloat>("pfo_shotEta");
+        m_pfo_shotDEta = tau->auxdata<vfloat>("pfo_shotDEta");
+        m_pfo_shotPt = tau->auxdata<vfloat>("pfo_shotPt");
+        m_pfo_shotJetPt = tau->auxdata<vfloat>("pfo_shotJetPt");
 
         // Conversion track variables
-        m_conv_pt = tau->auxdata<vfloat>("conv_pt");
-        m_conv_phi = tau->auxdata<vfloat>("conv_phi");
-        m_conv_eta = tau->auxdata<vfloat>("conv_eta");
+        m_conv_phi = tau->auxdata<vfloat>("conv_Phi");
+        m_conv_dphi = tau->auxdata<vfloat>("conv_DPhi");
+        m_conv_eta = tau->auxdata<vfloat>("conv_Eta");
+        m_conv_deta = tau->auxdata<vfloat>("conv_DEta");
+        m_conv_pt = tau->auxdata<vfloat>("conv_Pt");
+        m_conv_jetpt = tau->auxdata<vfloat>("conv_JetPt");
 
         // Fill that puppy
         m_tree->Fill();

@@ -47,39 +47,46 @@ public:
     float m_jet_Eta; //!
 
     // Charged PFO variables
-    vfloat m_pfo_chargedPt; //!
     vfloat m_pfo_chargedPhi; //!
+    vfloat m_pfo_chargedDPhi; //!
     vfloat m_pfo_chargedEta; //!
+    vfloat m_pfo_chargedDEta; //!
+    vfloat m_pfo_chargedPt; //!
+    vfloat m_pfo_chargedJetPt; //!
 
     // Neutral PFO variables
-    vfloat m_pfo_neutralPt; //!
     vfloat m_pfo_neutralPhi; //!
+    vfloat m_pfo_neutralDPhi; //!
     vfloat m_pfo_neutralEta; //!
+    vfloat m_pfo_neutralDEta; //!
+    vfloat m_pfo_neutralPt; //!
+    vfloat m_pfo_neutralJetPt; //!
+
     vfloat m_pfo_neutralPi0BDT; //!
-    vfloat m_pfo_neutralPtSub; //!
-    vuint8 m_pfo_neutralNHitsInEM1; //!
+    vfloat m_pfo_neutralPtSubRatio; //!
+
+    vfloat m_pfo_neutralNHitsInEM1; //!
     vfloat m_pfo_neutral_SECOND_R; //!
-    vfloat m_pfo_neutral_SECOND_LAMBDA; //!
-    vfloat m_pfo_neutral_CENTER_LAMBDA; //!
-    vfloat m_pfo_neutral_ENG_FRAC_MAX; //!
     vfloat m_pfo_neutral_ENG_FRAC_CORE; //!
-    vfloat m_pfo_neutral_SECOND_ENG_DENS; //!
-    vint m_pfo_neutral_NPosECells_EM1; //!
-    vint m_pfo_neutral_NPosECells_EM2; //!
+    vfloat m_pfo_neutral_NPosECells_EM1; //!
     vfloat m_pfo_neutral_secondEtaWRTClusterPosition_EM1; //!
-    vfloat m_pfo_neutral_secondEtaWRTClusterPosition_EM2; //!
-    vfloat m_pfo_neutral_energyfrac_EM1; //!
     vfloat m_pfo_neutral_energyfrac_EM2; //!
 
     // Shot PFO variables
-    vfloat m_pfo_shotPt; //!
     vfloat m_pfo_shotPhi; //!
+    vfloat m_pfo_shotDPhi; //!
     vfloat m_pfo_shotEta; //!
+    vfloat m_pfo_shotDEta; //!
+    vfloat m_pfo_shotPt; //!
+    vfloat m_pfo_shotJetPt; //!
 
     // Conversion track variables
-    vfloat m_conv_pt; //!
     vfloat m_conv_phi; //!
+    vfloat m_conv_dphi; //!
     vfloat m_conv_eta; //!
+    vfloat m_conv_deta; //!
+    vfloat m_conv_pt; //!
+    vfloat m_conv_jetpt; //!
 
     // this is a standard constructor
     NtupleCreator_DecayModeClf ();
