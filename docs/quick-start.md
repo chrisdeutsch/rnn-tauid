@@ -4,6 +4,12 @@ You can find the code on [Gitlab](https://gitlab.cern.ch/cdeutsch/rnn-tauid).
 
 TODO: Comment on the use of different environments
 
+## Related Packages
+
+- [tauRecTools/TauJetRNNEvaluator.h](https://gitlab.cern.ch/atlas/athena/blob/21.0/Reconstruction/tauRecTools/tauRecTools/TauJetRNNEvaluator.h)
+
+- [tauRecToolsDev/DecayModeClassifier.h](https://gitlab.cern.ch/cdeutsch/tauRecToolsDev/blob/decaymodeclf-implemenation/tauRecToolsDev/DecayModeClassifier.h)
+
 ## Installation
 
 # RNN-TauID

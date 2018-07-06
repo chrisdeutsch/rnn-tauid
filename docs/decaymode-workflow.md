@@ -132,7 +132,11 @@ An exemplary migration matrix is shown in the following:
 
 ## Converting the Model for tauRecTools
 
-In a clean shell (need lwtnn environment based on python3)
+To convert the model into a form that is suitable to run in the tauRecTool used
+to evaluate the model in the ATLAS software framework a clean shell is required.
+This is because `lwtnn`, which is used to evaluate the networks in C++, is only
+available for python3, while most of the ATLAS infrastructure runs on python2.
+To activate the python3 environment and convert the model do this:
 
 ```bash
 source rnn-tauid/setup.sh
@@ -146,5 +150,39 @@ lwtnn-split-keras-network.py model.h5
 # Fill the lwtnn variable specification
 kerasfunc2json.py architecture.json weights.h5 \
    | fill-lwtnn-varspec-decaymodeclf.py preproc.h5 \
-   | kerasfunc2json.py architecture.json weights.h5 /dev/stdin > nn.json
+   | kerasfunc2json.py architecture.json weights.h5 /dev/stdin > decaymodeclf_nn.json
 ```
+
+A quick explanation of the different parts of the conversion:
+
+- `lwtnn-split-keras-network.py` splits the output of the training into a
+  `json` file describing the model architecture and a HDF5 file that contains
+  the weights of the different layers.
+
+- The first invocation of `kerasfunc2json.py` writes an input variable
+  specification to stdout. This description has to be configured with the names
+  of the variables, layer names, and offset and scales that are used by the
+  usual preprocessing.
+
+- The variable description can be automatically filled using
+  `fill-lwtnn-varspec-decaymodeclf.py`. The preprocessing offsets and scales as
+  well as variable names are taken from the preprocessing output of the training.
+
+- Finally, lwtnn compiles the (filled) variable specification, architecture and
+  weights of the network into a single json representation which can be used in
+  `DecayModeClassifier`.
+
+A template for running the decay mode classifier in THOR can be found in
+`THOR/share/StreamDecayModeClf`. If the trained and converted model is placed in
+`tauRecTools/share`, then the model can be evaluated in THOR by scheduling the
+`DecayModeClassifier` and setting its properties. An example is:
+
+```python
+# Evaluator for decay mode classification network
+Clf = ROOT.tauRecToolsDev.DecayModeClassifier("DecayModeClassifier")
+CHECK(Clf.setProperty("Weightfile", "tauRecToolsDev/decaymodeclf_nn.json"))
+CHECK(Clf.setProperty("DecorateProba", True))
+Config += Clf
+```
+
+This will decorate the decay mode decision as well as all five mode probabilities.
