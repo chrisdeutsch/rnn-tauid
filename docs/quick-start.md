@@ -1,59 +1,55 @@
 # Quick Start
 
-You can find the code on [Gitlab](https://gitlab.cern.ch/cdeutsch/rnn-tauid).
+Clone the code from the repository the `--recursive` flag is important to also
+checkout the lwtnn submodule needed for converting models to be used in
+tauRecTools.
 
-TODO: Comment on the use of different environments
+```bash
+git clone --recursive ssh://git@gitlab.cern.ch:7999/cdeutsch/rnn-tauid.git
+```
+
+The setup script in the root directory of the repository sets important
+environment variables for later use.
+
+```bash
+source rnn-tauid/setup.sh
+```
+
+The package requires different software environments for different stages of the
+workflow. The different environments are activated by sourcing the scripts in
+`rnn-tauid/scripts/setup/`. To use the environments a first time setup for
+thehas to be completed. The following compiles the Eventloop algorithms and
+creates the python environment needed for training (do not source these scripts
+but rather execute them in a subshell):
+
+```bash
+setup_eventloop.sh
+setup_python.sh
+```
+
+The setup of the python environment takes some time as it downloads a standalone
+python distribution (miniconda) and all required packages.
+
+After the first time setup you can activate the desired environment with the
+activate scripts:
+
+- `source activate_eventloop_env.sh`
+    - Activates the eventloop environment for producing flat ntuples from THOR
+    MxAODs.
+- `source activate_python_env.sh`
+    - Activate the python environment for producing HDF5 files from flat
+    ntuples, training the networks and evaluating them outside of
+    ROOT/Athena/Eventloop.
+- `source activate_lwtnn_env.sh`
+    - Activate the python environment for converting the model using lwtnn.
+
+For more detailed instructions follow the workflow walkthroughs on Tau
+Identification and Tau Decay Mode Classification.
 
 ## Related Packages
 
-- [tauRecTools/TauJetRNNEvaluator.h](https://gitlab.cern.ch/atlas/athena/blob/21.0/Reconstruction/tauRecTools/tauRecTools/TauJetRNNEvaluator.h)
+- [THOR](https://gitlab.cern.ch/atlas-perf-tau/THOR) (Framework to produce MxAODs for TauCP studies)
 
-- [tauRecToolsDev/DecayModeClassifier.h](https://gitlab.cern.ch/cdeutsch/tauRecToolsDev/blob/decaymodeclf-implemenation/tauRecToolsDev/DecayModeClassifier.h)
+- [tauRecTools/TauJetRNNEvaluator.h](https://gitlab.cern.ch/atlas/athena/blob/21.0/Reconstruction/tauRecTools/tauRecTools/TauJetRNNEvaluator.h) (Athena implementation of the RNN-based tau identification)
 
-## Installation
-
-# RNN-TauID
-
-## Setup
-
-1. Set enviroment variables with `source setup.sh`
-2. Compile eventloop variables with `setup_eventloop.sh` (optional)
-3. Create python environments with `setup_python.sh` (optional)
-4. Activate environments with `source activate_*_env.sh` where `*` is
-   `eventloop`, `python` or `lwtnn`
-
-## Workflow
-
-1. Produce MxAODs on the grid with THOR
-2. Flatten MxAODs
-3. Produce hdf5 files for training
-4. Train
-5. Evaluate
-
-## Related packages
-
-- [THOR](https://gitlab.cern.ch/cdeutsch/THOR/tree/RNN-MC16A)
-- [tauRecToolsDev](https://gitlab.cern.ch/cdeutsch/tauRecToolsDev/tree/RNN-MC16A)
-
-TODO: Explain workflow including external packages
-
-## Convert trained model
-
-```
-# Setup the environment
-source rnn-tauid/setup.sh
-
-# Creates required python environments (can be omitted if they already exist)
-setup_python.sh
-
-# Activates the python environment needed for the lwtnn converter
-source activate_lwtnn_env.sh
-
-# Splits the model.h5 into separate architecture and weight files
-lwtnn-split-keras-network.py model.h5
-
-# Create the network tuning (fill-lwtnn-varspec.py fills the variable
-# specification including variable names, variable scales/offsets and
-# input/output layer config)
-kerasfunc2json.py architecture.json weights.h5 | fill-lwtnn-varspec.py preproc.h5 | kerasfunc2json.py architecture.json weights.h5 /dev/stdin > nn.json
-```
+- [tauRecToolsDev/DecayModeClassifier.h](https://gitlab.cern.ch/cdeutsch/tauRecToolsDev/blob/decaymodeclf-implemenation/tauRecToolsDev/DecayModeClassifier.h) (Eventloop implementation of the RNN-based tau decay mode classification)
