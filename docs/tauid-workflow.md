@@ -8,7 +8,8 @@ algorithm.
 Training the RNN-based tau identification requires MxAODs produced with THOR. A
 predefined stream called `StreamRNNTauID` is available in THOR which calls the
 decorator `RNNTauIDVarsCalculator` from tauRecToolsDev. Make sure to point
-the `THOR_SHARE` variable to the corresponding THOR directory.
+the `THOR_SHARE` variable to the corresponding THOR directory. Before running,
+make sure that the THOR stream is configured to run the `RNNTauIDVarsCalculator`.
 
 ```bash
 # THOR_SHARE needs to be set to THOR's share directory
