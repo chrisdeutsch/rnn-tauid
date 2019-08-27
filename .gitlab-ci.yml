@@ -7,7 +7,7 @@ compilation:
   stage: compile
   only:
     - master
-  image: atlas/analysisbase:21.2.30
+  image: atlas/analysisbase:21.2.85
   tags:
     - cvmfs
   before_script:
