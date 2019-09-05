@@ -283,18 +283,18 @@ conv_Pt_jet_log = partial(Pt_jet_log, var="ConvTrack/pt")
 
 charged_pfo_vars = [
     ("ChargedPFO/phi", charged_Phi, partial(constant_scale, scale=np.pi)),
-    ("ChargedPFO/dPhi", charged_dPhi, partial(constant_scale, scale=0.4)),
+    ("ChargedPFO/dphi", None, partial(constant_scale, scale=0.4)),
     ("ChargedPFO/eta", charged_Eta, partial(constant_scale, scale=2.5)),
-    ("ChargedPFO/dEta", charged_dEta, partial(constant_scale, scale=0.4)),
+    ("ChargedPFO/deta", None, partial(constant_scale, scale=0.4)),
     ("ChargedPFO/pt_log", charged_Pt_log, partial(scale, per_obj=False)),
     ("ChargedPFO/pt_jet_log", charged_Pt_jet_log, partial(scale, per_obj=False))
 ]
 
 neutral_pfo_vars = [
     ("NeutralPFO/phi", neutral_Phi, partial(constant_scale, scale=np.pi)),
-    ("NeutralPFO/dPhi", neutral_dPhi, partial(constant_scale, scale=0.4)),
+    ("NeutralPFO/dphi", None, partial(constant_scale, scale=0.4)),
     ("NeutralPFO/eta", neutral_Eta, partial(constant_scale, scale=2.5)),
-    ("NeutralPFO/dEta", neutral_dEta, partial(constant_scale, scale=0.4)),
+    ("NeutralPFO/deta", None, partial(constant_scale, scale=0.4)),
     ("NeutralPFO/pt_log", neutral_Pt_log, partial(scale, per_obj=False)),
     ("NeutralPFO/pt_jet_log", neutral_Pt_jet_log, partial(scale, per_obj=False)),
 
@@ -313,8 +313,8 @@ neutral_pfo_vars = [
 
 conversion_vars = [
     ("ConvTrack/phi", conv_Phi, partial(constant_scale, scale=np.pi)),
-    ("ConvTrack/dPhi", conv_dPhi, partial(constant_scale, scale=0.4)),
-    ("ConvTrack/dEta", conv_dEta, partial(constant_scale, scale=0.4)),
+    ("ConvTrack/dphi", None, partial(constant_scale, scale=0.4)),
+    ("ConvTrack/deta", None, partial(constant_scale, scale=0.4)),
     ("ConvTrack/eta", conv_Eta, partial(constant_scale, scale=2.5)),
     ("ConvTrack/pt_log", conv_Pt_log, partial(scale, per_obj=False)),
     ("ConvTrack/pt_jet_log", conv_Pt_jet_log, partial(scale, per_obj=False))
@@ -322,9 +322,9 @@ conversion_vars = [
 
 shot_vars = [
     ("ShotPFO/phi", shot_Phi, partial(constant_scale, scale=np.pi)),
-    ("ShotPFO/dPhi", shot_dPhi, partial(constant_scale, scale=0.4)),
+    ("ShotPFO/dphi", None, partial(constant_scale, scale=0.4)),
     ("ShotPFO/eta", shot_Eta, partial(constant_scale, scale=2.5)),
-    ("ShotPFO/dEta", shot_dEta, partial(constant_scale, scale=0.4)),
+    ("ShotPFO/deta", None, partial(constant_scale, scale=0.4)),
     ("ShotPFO/pt_log", shot_Pt_log, partial(scale, per_obj=False)),
     ("ShotPFO/pt_jet_log", shot_Pt_jet_log, partial(scale, per_obj=False))
 ]
