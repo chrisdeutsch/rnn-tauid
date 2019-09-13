@@ -308,7 +308,7 @@ neutral_pfo_vars = [
     ("NeutralPFO/nPosECells_EM1", None, partial(scale, per_obj=False)),
     ("NeutralPFO/ENG_FRAC_CORE", None, None),
     ("NeutralPFO/energyfrac_EM2", None, None),
-    ("NeutralPFO/ptSubRatio", PtSubRatio, None)
+    ("NeutralPFO/ptSubRatio", None, None)
 ]
 
 conversion_vars = [
