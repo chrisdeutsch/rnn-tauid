@@ -10,6 +10,10 @@ predefined stream called `StreamRNNTauID` is available in THOR which calls the
 decorator `RNNTauIDVarsCalculator` from tauRecToolsDev. Make sure to point
 the `THOR_SHARE` variable to the corresponding THOR directory. Before running,
 make sure that the THOR stream is configured to run the `RNNTauIDVarsCalculator`.
+You can do this by uncommenting the section of code under `# Decorate RNN results`
+in the python script `${THOR_SHARE}/StreamRNNTauID/Main.py`
+You are then ready to run THOR on the grid as is done in the lines below.
+
 
 ```bash
 # THOR_SHARE needs to be set to THOR's share directory
@@ -22,15 +26,27 @@ thor ${THOR_SHARE}/StreamRNNTauID/Main.py -r grid \
     --gridstreamname StreamRNNTauID --gridrunversion 01-00
 ```
 
-This will produce MxAODs for the Gammatautau sample as well as jet slices JZ1W to JZ6W.
+This will produce MxAODs for the Gammatautau signal sample as well as the 
+background samples, also called jet slices, JZ1W to JZ6W.
 
-For details on how to use THOR consult the
+You can check the status of the jobs run by logging into the [PanDA](https://bigpanda.cern.ch/) website.
+
+For details on how to install and use THOR consult the
 [documentation](https://gitlab.cern.ch/atlas-perf-tau/THOR/blob/master/README.rst).
 
 ## Flattening the MxAOD
 
-After downloading the MxAODs in the directory `${STREAM_DIR}` (should contain a
-subdirectory for every sample) the MxAOD flattening can be run with:
+You must then create a directory where you will store all the MxAODs you created with THOR.
+Call this whatever you like but define its path to point to `${STREAM_DIR}`
+From here you must download the MxAODs using `rucio` to this directory, a rough example is as follows
+```
+cd $STREAM_DIR
+lsetup rucio
+rucio get user.YOUR_CERN_USER_NAME.GRID_STREAM_NAME_ABOVE.361026.Pythia8EvtGen_A14NNPDF23LO_jetjet_JZ6W_v_GRID_RUN_VERSION_ABOVE_output.root
+```
+
+This should download a directory that contains the dataset you are asking for.
+The MxAOD flattening can then be run with:
 
 ```bash
 # Set up environment variables
@@ -82,16 +98,16 @@ TEST_SEL="TauJets.mcEventNumber % 2 == 1"
 
 # A running index is given by '%d' to split files
 ntuple2hdf.py sig1P_train_%d.h5 truth1p ${NTUPLE_DIR}/*Gammatautau*.root \
-    --sel "${TRAIN_SEL}"
+    --sel "${TRAIN_SEL}" --treename "tree" --tauid
 
 ntuple2hdf.py sig3P_train_%d.h5 truth3p ${NTUPLE_DIR}/*Gammatautau*.root \
-    --sel "${TRAIN_SEL}"
+    --sel "${TRAIN_SEL}" --treename "tree" --tauid
 
 ntuple2hdf.py bkg1P_train_%d.h5 1p ${NTUPLE_DIR}/*JZ?W*.root \
-    --sel "${TRAIN_SEL}"
+    --sel "${TRAIN_SEL}" --treename "tree" --tauid
 
 ntuple2hdf.py bkg3P_train_%d.h5 3p ${NTUPLE_DIR}/*JZ?W*.root \
-    --sel "${TRAIN_SEL}"
+    --sel "${TRAIN_SEL}" --treename "tree" --tauid
 
 # Repeat for 'TEST_SEL'
 ```
